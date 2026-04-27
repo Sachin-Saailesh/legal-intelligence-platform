@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LexMind Intelligence - Live Agent Query</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400&amp;family=Georgia&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed": "#d6e3ff",
+                        "secondary-fixed": "#d0e4ff",
+                        "secondary-fixed-dim": "#9bcbff",
+                        "secondary": "#38bdf8",
+                        "secondary-container": "#1e3a5f",
+                        "inverse-surface": "#f0f1f2",
+                        "on-secondary-fixed-variant": "#004a7a",
+                        "on-surface": "#e2e8f0",
+                        "surface-container-low": "#1A1A2E",
+                        "on-secondary": "#ffffff",
+                        "on-background": "#e2e8f0",
+                        "on-surface-variant": "#94a3b8",
+                        "surface-dim": "#111827",
+                        "tertiary-fixed-dim": "#b4c7ec",
+                        "inverse-primary": "#022448",
+                        "tertiary": "#b4c7ec",
+                        "primary-fixed": "#d5e3ff",
+                        "surface-container": "#1E3A5F",
+                        "primary": "#38bdf8",
+                        "error-container": "#93000a",
+                        "primary-fixed-dim": "#adc8f5",
+                        "surface-container-highest": "#334155",
+                        "background": "#0F2340",
+                        "on-primary": "#0F2340",
+                        "on-primary-fixed-variant": "#adc8f5",
+                        "on-secondary-container": "#d0e4ff",
+                        "on-tertiary-fixed-variant": "#d6e3ff",
+                        "surface-container-high": "#1E3A5F",
+                        "surface-container-lowest": "#0a192f",
+                        "error": "#fb7185",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#1E3A5F",
+                        "on-primary-container": "#d5e3ff",
+                        "surface": "#0F2340",
+                        "on-secondary-fixed": "#001d34",
+                        "on-tertiary-fixed": "#061b38",
+                        "outline-variant": "#334155",
+                        "on-primary-fixed": "#001c3b",
+                        "outline": "#64748b",
+                        "primary-container": "#1E3A5F",
+                        "on-tertiary": "#0F2340",
+                        "on-tertiary-container": "#d6e3ff",
+                        "surface-bright": "#1E3A5F",
+                        "surface-tint": "#38bdf8",
+                        "inverse-on-surface": "#191c1d",
+                        "tertiary-container": "#283a58",
+                        "on-error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"],
+                        "mono": ["JetBrains Mono"],
+                        "serif": ["Georgia"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .citation-highlight {
+            background-color: rgba(254, 240, 138, 0.2); /* yellow-200 with opacity */
+            color: #fef08a;
+            padding: 0 2px;
+            border-bottom: 1px dashed #fef08a;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        
+        /* Specific Dark Mode Adjustments */
+        .prose p { color: #e2e8f0; }
+        .prose li { color: #e2e8f0; }
+    </style>
+</head>
+<body class="bg-background font-body text-on-surface flex min-h-screen overflow-hidden">
+<!-- SideNavBar -->
+<aside class="flex flex-col h-screen fixed left-0 top-0 bg-[#0F2340] docked left-0 h-full w-64 shadow-2xl z-50 border-r border-white/5">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-8">
+<div class="w-8 h-8 bg-sky-400 flex items-center justify-center rounded">
+<span class="material-symbols-outlined text-[#0F2340]" style="font-variation-settings: 'FILL' 1;">balance</span>
+</div>
+<div>
+<h1 class="text-lg font-bold text-white tracking-tight">LexMind</h1>
+<p class="text-[10px] text-sky-400 font-sans tracking-widest uppercase">Hartwell &amp; Associates</p>
+</div>
+</div>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 font-sans text-sm font-medium tracking-wide uppercase text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors scale-95 active:scale-100 transition-transform" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 font-sans text-sm font-medium tracking-wide uppercase text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors scale-95 active:scale-100 transition-transform" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="folder_shared">folder_shared</span>
+<span>Matters</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 font-sans text-sm font-medium tracking-wide uppercase text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors scale-95 active:scale-100 transition-transform" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="description">description</span>
+<span>Documents</span>
+</a>
+<!-- ACTIVE TAB: Query -->
+<a class="flex items-center gap-3 px-4 py-3 font-sans text-sm font-medium tracking-wide uppercase bg-[#1E3A5F] text-white border-l-4 border-sky-500 scale-95 active:scale-100 transition-transform" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="search_insights">search_insights</span>
+<span>Query</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 font-sans text-sm font-medium tracking-wide uppercase text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors scale-95 active:scale-100 transition-transform" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="task">task</span>
+<span>Review Queue</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 font-sans text-sm font-medium tracking-wide uppercase text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors scale-95 active:scale-100 transition-transform" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="security">security</span>
+<span>Compliance Alerts</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 font-sans text-sm font-medium tracking-wide uppercase text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors scale-95 active:scale-100 transition-transform" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto p-6 border-t border-white/5">
+<a class="flex items-center gap-3 px-4 py-3 font-sans text-sm font-medium tracking-wide uppercase text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors scale-95 active:scale-100 transition-transform" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="account_circle">account_circle</span>
+<span>Profile</span>
+</a>
+</div>
+</aside>
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 flex items-center justify-between px-8 z-40 bg-[#0F2340] h-16 w-[calc(100%-16rem)] border-b border-white/5">
+<div class="flex items-center gap-6">
+<span class="text-slate-300 font-sans text-sm font-semibold tracking-tight">LexMind Intelligence / <span class="text-sky-400 font-bold">Query Explorer</span></span>
+<div class="relative group">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-500 text-lg">search</span>
+<input class="bg-[#1E3A5F] border-none rounded-lg pl-10 pr-4 py-1.5 text-sm w-80 text-white placeholder-slate-500 focus:ring-2 focus:ring-sky-500/20 transition-all" placeholder="Search Matter files or agents..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-sky-400 transition-opacity duration-150">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-[#1E3A5F] flex items-center justify-center border border-white/10">
+<span class="material-symbols-outlined text-sky-400 text-lg" data-icon="account_circle">account_circle</span>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 mt-16 w-[calc(100%-16rem)] h-[calc(100vh-4rem)] flex overflow-hidden">
+<!-- Left Panel (55%): Query & Response -->
+<section class="w-[55%] flex flex-col border-r border-white/5 bg-[#0F2340]">
+<!-- Agent Selection Bar -->
+<div class="px-8 py-4 flex items-center gap-3 bg-[#1A1A2E]/50">
+<span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase mr-2">Target Agents:</span>
+<span class="flex items-center gap-1.5 bg-sky-500/10 text-sky-400 text-[10px] font-bold px-2.5 py-1 rounded-sm border border-sky-500/20">
+<span class="w-1.5 h-1.5 bg-sky-400 rounded-full animate-pulse"></span>
+                    CONTRACT ANALYST
+                </span>
+<span class="flex items-center gap-1.5 bg-[#1E3A5F] text-slate-300 text-[10px] font-bold px-2.5 py-1 rounded-sm border border-white/5">
+                    PRECEDENT BOT
+                </span>
+<span class="flex items-center gap-1.5 bg-slate-700 text-white text-[10px] font-bold px-2.5 py-1 rounded-sm">
+                    RESEARCH
+                </span>
+</div>
+<!-- Query Input Area -->
+<div class="p-8 pb-4">
+<div class="relative bg-[#1A1A2E] shadow-xl rounded-lg border border-white/5 p-1">
+<textarea class="w-full min-h-[120px] p-4 text-sm border-none focus:ring-0 bg-transparent resize-none font-body text-slate-200 placeholder-slate-500" placeholder="Ask the Intelligence Layer about this Matter... (e.g. 'Summarize the termination clauses in the acquisition agreement and flag potential conflict with existing state statutes')"></textarea>
+<div class="flex items-center justify-between p-3 bg-[#1E3A5F]/30 rounded-b-md">
+<div class="flex gap-4">
+<button class="text-slate-400 hover:text-sky-400 transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="attachment">attachment</span>
+</button>
+<button class="text-slate-400 hover:text-sky-400 transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="mic">mic</span>
+</button>
+</div>
+<button class="bg-gradient-to-br from-sky-500 to-sky-700 text-white px-5 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 hover:brightness-110 transition-all shadow-lg shadow-sky-500/10">
+<span>Run query</span>
+<span class="material-symbols-outlined text-sm">bolt</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Response Area (Streaming Content) -->
+<div class="flex-1 overflow-y-auto px-8 py-4">
+<div class="mb-6 flex items-center justify-between border-b border-white/5 pb-2">
+<div class="flex items-center gap-2 text-slate-300">
+<span class="material-symbols-outlined text-emerald-400 text-lg" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-xs font-semibold uppercase tracking-wider">Analysis Complete</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1">
+<div class="flex gap-0.5">
+<div class="w-1 h-3 bg-sky-500 rounded-full"></div>
+<div class="w-1 h-3 bg-sky-500 rounded-full"></div>
+<div class="w-1 h-3 bg-sky-500 rounded-full"></div>
+<div class="w-1 h-3 bg-sky-500 rounded-full"></div>
+</div>
+<span class="text-xs font-bold text-sky-400 ml-1">94%</span>
+<span class="text-[10px] font-medium text-slate-500 uppercase tracking-tighter">Confidence: High</span>
+</div>
+</div>
+</div>
+<div class="prose prose-sm max-w-none text-slate-300 font-serif leading-relaxed text-[15px] space-y-4">
+<p>Based on the <span class="font-mono text-[12px] bg-sky-900/40 text-sky-300 border border-sky-500/20 px-1 rounded">M&amp;A_Agreement_v4.pdf</span>, the termination clauses are structured under <span class="font-bold text-white">Article XI (Termination)</span>. Specifically, Section 11.02 outlines the "Outside Date" as December 31, 2024. <button class="inline-flex items-center px-2 py-0.5 bg-slate-800 text-sky-400 border border-white/10 rounded text-[10px] font-bold mx-1 align-middle hover:bg-sky-500 hover:text-white transition-colors">CIT-104</button></p>
+<p>However, there is a potential conflict with <span class="italic text-slate-200">Delaware General Corporation Law § 251(c)</span> regarding the timeline for stockholder approval notification. The current draft allows for a 10-day curative period, which may be insufficient under recent 2023 rulings <button class="inline-flex items-center px-2 py-0.5 bg-slate-800 text-sky-400 border border-white/10 rounded text-[10px] font-bold mx-1 align-middle hover:bg-sky-500 hover:text-white transition-colors">CIT-105</button>. </p>
+<ul class="list-disc pl-5 space-y-2 marker:text-sky-500">
+<li>The <span class="citation-highlight">termination fee of 3.5%</span> ($4.2M) sits within standard market parameters for a transaction of this scale.</li>
+<li>Force Majeure clause includes "Pandemic/Epidemic" language which has been updated to reflect post-2020 regulatory standards.</li>
+<li>Conflict found in <span class="font-mono text-[12px] text-rose-400 font-bold">Exhibit B, Clause 4.2</span>: Inconsistent liability caps between parent and subsidiary entities.</li>
+</ul>
+<p>Recommendation: Amend Section 11.05 to synchronize the cure periods with the notice requirements found in the Delaware statutes referenced above. <button class="inline-flex items-center px-2 py-0.5 bg-slate-800 text-sky-400 border border-white/10 rounded text-[10px] font-bold mx-1 align-middle hover:bg-sky-500 hover:text-white transition-colors">CIT-106</button></p>
+</div>
+</div>
+<!-- Bottom Actions -->
+<div class="p-6 bg-[#1A1A2E]/50 border-t border-white/5 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<button class="bg-[#1E3A5F] text-white px-4 py-2 rounded-md text-sm font-semibold flex items-center gap-2 hover:bg-sky-600 transition-all border border-white/5">
+<span class="material-symbols-outlined text-sm">thumb_up</span>
+<span>Approve</span>
+</button>
+<button class="bg-transparent border border-white/10 text-slate-300 px-4 py-2 rounded-md text-sm font-semibold flex items-center gap-2 hover:bg-[#1E3A5F] transition-all">
+<span class="material-symbols-outlined text-sm">edit_note</span>
+<span>Request correction</span>
+</button>
+</div>
+<button class="text-sky-400 font-bold text-sm flex items-center gap-2 hover:underline">
+<span class="material-symbols-outlined text-lg">description</span>
+<span>Export to Word</span>
+</button>
+</div>
+</section>
+<!-- Right Panel (45%): Source Citations & Graph -->
+<section class="w-[45%] flex flex-col bg-[#1A1A2E]">
+<div class="p-6 pb-2">
+<h2 class="text-xs font-bold text-slate-500 uppercase tracking-[0.2em] mb-4">Evidence &amp; Source Citations</h2>
+<div class="space-y-4 overflow-y-auto max-h-[calc(100vh-22rem)] pr-2">
+<!-- Citation Card 1 -->
+<div class="bg-[#1E3A5F]/40 p-4 rounded-lg shadow-sm border border-white/5 border-l-4 border-sky-500">
+<div class="flex items-center justify-between mb-3">
+<span class="text-[10px] font-mono font-bold bg-sky-500/20 text-sky-400 px-2 py-0.5 rounded">CIT-104</span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sky-400 text-sm" style="font-variation-settings: 'FILL' 1;">security</span>
+<span class="text-[10px] font-bold text-sky-400 uppercase">98% Match</span>
+</div>
+</div>
+<h3 class="text-xs font-bold text-slate-200 mb-1">M&amp;A_Agreement_v4_Exec.pdf</h3>
+<p class="text-[10px] text-slate-500 mb-2">Page 82, Paragraph 4.1</p>
+<div class="bg-[#0F2340]/50 p-3 rounded font-serif text-[13px] leading-snug border border-white/5 text-slate-300">
+                            "In the event that the Closing has not occurred on or before <span class="citation-highlight">December 31, 2024</span> (the 'Outside Date'), either party may terminate this Agreement..."
+                        </div>
+</div>
+<!-- Citation Card 2 -->
+<div class="bg-[#1E3A5F]/40 p-4 rounded-lg shadow-sm border border-white/5 border-l-4 border-indigo-400">
+<div class="flex items-center justify-between mb-3">
+<span class="text-[10px] font-mono font-bold bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded">CIT-105</span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-indigo-400 text-sm" style="font-variation-settings: 'FILL' 1;">security</span>
+<span class="text-[10px] font-bold text-indigo-400 uppercase">82% Match</span>
+</div>
+</div>
+<h3 class="text-xs font-bold text-slate-200 mb-1">Delaware Corp Law § 251</h3>
+<p class="text-[10px] text-slate-500 mb-2">Statutory Database Search</p>
+<div class="bg-[#0F2340]/50 p-3 rounded font-serif text-[13px] leading-snug border border-white/5 text-slate-300">
+                            "(c) The agreement required by subsection (b) shall be submitted to the stockholders of each constituent corporation at an <span class="citation-highlight">annual or special meeting</span> for the purpose of acting on the agreement..."
+                        </div>
+</div>
+<!-- Citation Card 3 -->
+<div class="bg-[#1E3A5F]/20 p-4 rounded-lg shadow-sm border border-white/5 border-l-4 border-slate-600 opacity-60">
+<div class="flex items-center justify-between mb-3">
+<span class="text-[10px] font-mono font-bold bg-slate-800 text-slate-400 px-2 py-0.5 rounded">CIT-106</span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-slate-500 text-sm">security</span>
+<span class="text-[10px] font-bold text-slate-500 uppercase">45% Related</span>
+</div>
+</div>
+<h3 class="text-xs font-bold text-slate-300 mb-1">Internal_Precedent_2022.doc</h3>
+<p class="text-[10px] text-slate-500 mb-2">Internal Knowledge Base</p>
+<div class="bg-[#0F2340]/30 p-3 rounded font-serif text-[13px] leading-snug border border-white/5 italic text-slate-400">
+                            "Reference Hartwell v. GlobalTech (2022) regarding notice period limitations in cross-border acquisitions..."
+                        </div>
+</div>
+</div>
+</div>
+<!-- Knowledge Graph Visualizer -->
+<div class="mt-auto p-4 m-6 mb-8 bg-[#0F2340] rounded-xl relative overflow-hidden h-56 border border-white/10 group">
+<div class="flex items-center justify-between mb-4 z-10 relative">
+<h3 class="text-[10px] font-bold text-sky-400 tracking-widest uppercase">Knowledge Graph Context</h3>
+<button class="text-white/50 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-sm">fullscreen</span>
+</button>
+</div>
+<!-- Abstract Graph Visual -->
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none p-8 mt-4">
+<svg class="w-full h-full opacity-40" viewbox="0 0 400 200">
+<circle cx="200" cy="100" fill="#38bdf8" fill-opacity="0.8" r="10"></circle>
+<circle cx="120" cy="60" fill="#1f6298" r="6"></circle>
+<circle cx="280" cy="60" fill="#1f6298" r="6"></circle>
+<circle cx="140" cy="150" fill="#1f6298" r="6"></circle>
+<circle cx="260" cy="150" fill="#1f6298" r="6"></circle>
+<line stroke="white" stroke-dasharray="4" stroke-width="0.5" x1="200" x2="120" y1="100" y2="60"></line>
+<line stroke="white" stroke-width="0.5" x1="200" x2="280" y1="100" y2="60"></line>
+<line stroke="white" stroke-width="0.5" x1="200" x2="140" y1="100" y2="150"></line>
+<line stroke="white" stroke-dasharray="2" stroke-width="0.5" x1="200" x2="260" y1="100" y2="150"></line>
+</svg>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+<span class="text-[10px] font-bold text-white bg-sky-900/80 px-2 py-0.5 rounded backdrop-blur-sm">Matter Base</span>
+</div>
+<div class="absolute top-[35%] left-[28%] flex flex-col items-center">
+<span class="text-[8px] font-medium text-slate-400">Delaware Law</span>
+</div>
+<div class="absolute bottom-[25%] right-[32%] flex flex-col items-center">
+<span class="text-[8px] font-medium text-slate-400">M&amp;A Agreement</span>
+</div>
+</div>
+<div class="absolute bottom-4 left-4 right-4 flex justify-between items-end z-10">
+<div class="flex flex-col gap-1">
+<span class="text-[9px] text-slate-500">Total Nodes: <span class="text-white">1,242</span></span>
+<span class="text-[9px] text-slate-500">High Relevance: <span class="text-white">12</span></span>
+</div>
+<div class="bg-sky-500/10 border border-sky-500/30 px-2 py-1 rounded">
+<span class="text-[9px] font-bold text-sky-400">GRAPH ACTIVE</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Overlay: Agent Processing (Glassmorphism Sample) -->
+<div class="hidden fixed bottom-8 left-1/2 -translate-x-1/2 bg-[#1E3A5F]/80 backdrop-blur-md border border-white/10 px-6 py-3 rounded-full flex items-center gap-4 shadow-2xl z-50">
+<div class="flex gap-1">
+<div class="w-1.5 h-6 bg-sky-400 animate-[bounce_1s_infinite_0ms]"></div>
+<div class="w-1.5 h-6 bg-sky-400 animate-[bounce_1s_infinite_200ms]"></div>
+<div class="w-1.5 h-6 bg-sky-400 animate-[bounce_1s_infinite_400ms]"></div>
+</div>
+<span class="text-white text-xs font-bold tracking-widest uppercase">Agent Cluster Synchronizing...</span>
+</div>
+</body></html>

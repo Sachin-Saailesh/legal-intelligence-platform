@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LexMind Intelligence - HITL Review Queue</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;family=Georgia&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed": "#d6e3ff",
+                        "secondary-fixed": "#d0e4ff",
+                        "secondary-fixed-dim": "#9bcbff",
+                        "secondary": "#3b82f6",
+                        "secondary-container": "#1e3a5f",
+                        "inverse-surface": "#f0f1f2",
+                        "on-secondary-fixed-variant": "#004a7a",
+                        "on-surface": "#e2e8f0",
+                        "on-background": "#e2e8f0",
+                        "on-surface-variant": "#94a3b8",
+                        "surface-dim": "#0a1629",
+                        "tertiary-fixed-dim": "#b4c7ec",
+                        "inverse-primary": "#022448",
+                        "tertiary": "#102441",
+                        "primary-fixed": "#d5e3ff",
+                        "surface-container": "#1a1a2e",
+                        "primary": "#3b82f6",
+                        "error-container": "#450a0a",
+                        "primary-fixed-dim": "#adc8f5",
+                        "surface-container-highest": "#2d3748",
+                        "background": "#0F2340",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed-variant": "#2d486d",
+                        "on-secondary-container": "#d0e4ff",
+                        "on-tertiary-fixed-variant": "#354766",
+                        "surface-container-high": "#1e293b",
+                        "surface-container-lowest": "#0a1629",
+                        "error": "#f87171",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#334155",
+                        "on-primary-container": "#8aa4cf",
+                        "surface": "#0F2340",
+                        "on-secondary-fixed": "#001d34",
+                        "on-tertiary-fixed": "#061b38",
+                        "outline-variant": "#334155",
+                        "on-primary-fixed": "#001c3b",
+                        "outline": "#64748b",
+                        "primary-container": "#1e3a5f",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-container": "#92a4c8",
+                        "surface-bright": "#1e293b",
+                        "surface-tint": "#3b82f6",
+                        "inverse-on-surface": "#191c1d",
+                        "tertiary-container": "#283a58",
+                        "on-error-container": "#fecaca"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"],
+                        "mono": ["JetBrains Mono"],
+                        "serif": ["Georgia"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .confidence-bar { height: 4px; width: 12px; border-radius: 1px; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background font-body text-on-surface min-h-screen flex overflow-hidden">
+<!-- SideNavBar -->
+<nav class="flex flex-col h-screen fixed left-0 top-0 bg-[#0A1629] docked left-0 h-full w-64 shadow-2xl no-border z-50">
+<div class="p-6 flex flex-col gap-1">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-800 rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-sm" style="font-variation-settings: 'FILL' 1;">balance</span>
+</div>
+<div>
+<h1 class="text-lg font-bold text-white tracking-tight">LexMind</h1>
+<p class="text-[10px] text-blue-300 uppercase tracking-[0.1em]">Hartwell &amp; Associates</p>
+</div>
+</div>
+</div>
+<div class="flex-1 px-4 mt-4 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-sans text-sm font-medium tracking-wide uppercase text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span> Dashboard
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-sans text-sm font-medium tracking-wide uppercase text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors" href="#">
+<span class="material-symbols-outlined">folder_shared</span> Matters
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-sans text-sm font-medium tracking-wide uppercase text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors" href="#">
+<span class="material-symbols-outlined">description</span> Documents
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-sans text-sm font-medium tracking-wide uppercase text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors" href="#">
+<span class="material-symbols-outlined">search_insights</span> Query
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-sans text-sm font-medium tracking-wide uppercase bg-[#1E3A5F] text-white border-l-4 border-blue-400" href="#">
+<span class="material-symbols-outlined">task</span> Review Queue
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-sans text-sm font-medium tracking-wide uppercase text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors" href="#">
+<span class="material-symbols-outlined">security</span> Compliance Alerts
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-sans text-sm font-medium tracking-wide uppercase text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span> Settings
+            </a>
+</div>
+<div class="p-4 border-t border-slate-700/30">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg font-sans text-sm font-medium tracking-wide uppercase text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors" href="#">
+<span class="material-symbols-outlined">account_circle</span> Profile
+            </a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 ml-64 flex flex-col h-screen relative">
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 flex items-center justify-between px-8 z-40 bg-[#0F2340] border-b border-slate-700/50 h-16 w-[calc(100%-16rem)]">
+<div class="flex items-center flex-1">
+<div class="relative w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+<input class="w-full bg-[#1A1A2E] border-none rounded-lg py-2 pl-10 pr-4 text-sm font-sans text-on-surface placeholder:text-slate-500 focus:ring-1 focus:ring-blue-500 transition-all" placeholder="Search queue, matters, or corrections..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4 text-slate-400">
+<button class="material-symbols-outlined hover:text-white transition-colors">notifications</button>
+<button class="material-symbols-outlined hover:text-white transition-colors">account_circle</button>
+</div>
+</div>
+</header>
+<!-- Main Workspace Area -->
+<div class="mt-16 flex flex-1 overflow-hidden">
+<!-- Left: Queue List -->
+<aside class="w-[340px] bg-[#0F2340] flex flex-col border-r border-slate-700/50">
+<div class="p-4 flex items-center justify-between bg-[#1A1A2E] border-b border-slate-700/50">
+<span class="text-xs font-bold uppercase tracking-widest text-slate-400">Pending Review (12)</span>
+<span class="text-[10px] text-blue-400 font-medium bg-blue-400/10 px-2 py-0.5 rounded">Oldest First</span>
+</div>
+<div class="flex-1 overflow-y-auto">
+<!-- Queue Item (Active) -->
+<div class="p-4 bg-[#1E3A5F]/30 border-l-4 border-blue-500 cursor-pointer hover:bg-[#1E3A5F]/50 transition-colors">
+<div class="flex justify-between items-start mb-2">
+<span class="text-xs font-bold text-white truncate max-w-[180px]">Anderson vs. Thorne Corp</span>
+<span class="text-[10px] font-mono text-slate-400">14m ago</span>
+</div>
+<p class="text-xs text-slate-300 line-clamp-2 mb-3 leading-relaxed">Extract non-compete duration and geographic scope clauses from Section 8.4...</p>
+<div class="flex items-center justify-between">
+<span class="px-2 py-0.5 bg-blue-600 text-white text-[9px] font-bold rounded-sm uppercase tracking-tighter">Contract</span>
+<div class="flex gap-0.5 items-center">
+<div class="flex gap-0.5 mr-2">
+<div class="confidence-bar bg-blue-500"></div>
+<div class="confidence-bar bg-blue-500"></div>
+<div class="confidence-bar bg-blue-500"></div>
+<div class="confidence-bar bg-slate-700"></div>
+</div>
+<span class="text-[10px] font-mono font-bold text-blue-400">78%</span>
+</div>
+</div>
+</div>
+<!-- Queue Item -->
+<div class="p-4 border-b border-slate-700/30 cursor-pointer hover:bg-[#1E3A5F]/20 transition-colors">
+<div class="flex justify-between items-start mb-2">
+<span class="text-xs font-bold text-slate-200 truncate max-w-[180px]">Global Logistics MSA</span>
+<span class="text-[10px] font-mono text-slate-400">2h ago</span>
+</div>
+<p class="text-xs text-slate-400 line-clamp-2 mb-3 leading-relaxed">Verify liability caps match the master agreement annex B limits...</p>
+<div class="flex items-center justify-between">
+<span class="px-2 py-0.5 bg-slate-700 text-slate-300 text-[9px] font-bold rounded-sm uppercase tracking-tighter">Draft</span>
+<div class="flex gap-0.5 items-center">
+<div class="flex gap-0.5 mr-2">
+<div class="confidence-bar bg-blue-500"></div>
+<div class="confidence-bar bg-blue-500"></div>
+<div class="confidence-bar bg-slate-700"></div>
+<div class="confidence-bar bg-slate-700"></div>
+</div>
+<span class="text-[10px] font-mono font-bold text-slate-400">52%</span>
+</div>
+</div>
+</div>
+<!-- Queue Item (Critical) -->
+<div class="p-4 border-b border-slate-700/30 cursor-pointer hover:bg-[#1E3A5F]/20 transition-colors">
+<div class="flex justify-between items-start mb-2">
+<span class="text-xs font-bold text-slate-200 truncate max-w-[180px]">Project Helios - Regulatory</span>
+<span class="text-[10px] font-mono text-slate-400">4h ago</span>
+</div>
+<p class="text-xs text-slate-400 line-clamp-2 mb-3 leading-relaxed">Review SEC filing compliance for Section 16(b) insiders...</p>
+<div class="flex items-center justify-between">
+<span class="px-2 py-0.5 bg-red-600/80 text-white text-[9px] font-bold rounded-sm uppercase tracking-tighter">Risk</span>
+<div class="flex gap-0.5 items-center">
+<div class="flex gap-0.5 mr-2">
+<div class="confidence-bar bg-red-500"></div>
+<div class="confidence-bar bg-slate-700"></div>
+<div class="confidence-bar bg-slate-700"></div>
+<div class="confidence-bar bg-slate-700"></div>
+</div>
+<span class="text-[10px] font-mono font-bold text-red-400">12%</span>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Right: Review Workspace -->
+<section class="flex-1 bg-[#1A1A2E] flex flex-col overflow-hidden">
+<!-- Header -->
+<div class="p-8 pb-4 bg-[#0F2340]">
+<div class="flex justify-between items-start mb-4">
+<div>
+<nav class="flex gap-2 text-[10px] font-mono text-slate-400 uppercase tracking-widest mb-1">
+<span>Matters</span>
+<span>/</span>
+<span class="text-blue-400 font-bold">Anderson vs. Thorne Corp</span>
+</nav>
+<h2 class="text-2xl font-semibold text-white">Clause Extraction Review</h2>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-3 py-1.5 bg-[#1E3A5F] text-slate-200 text-xs font-medium rounded-md hover:bg-blue-600 transition-all">
+<span class="material-symbols-outlined text-sm">history</span>
+                                View Version History
+                            </button>
+<button class="flex items-center gap-2 px-3 py-1.5 bg-[#1E3A5F] text-slate-200 text-xs font-medium rounded-md hover:bg-blue-600 transition-all">
+<span class="material-symbols-outlined text-sm">compare_arrows</span>
+                                Diff View
+                            </button>
+</div>
+</div>
+<div class="bg-[#1A1A2E] p-4 rounded-lg border-l-4 border-blue-500/30">
+<label class="text-[10px] font-bold uppercase text-slate-400 mb-1 block tracking-wider">Original Query</label>
+<p class="text-sm text-slate-200 italic leading-relaxed">"Extract the non-compete duration and exact geographic scope defined in the employment agreement for the role of Senior VP. Map these to the standard compliance template."</p>
+</div>
+</div>
+<!-- Comparison Columns -->
+<div class="flex-1 p-8 grid grid-cols-2 gap-8 overflow-y-auto">
+<!-- AI Draft -->
+<div class="flex flex-col">
+<div class="flex items-center justify-between mb-3">
+<h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+                                AI Draft Output
+                            </h3>
+<span class="text-[10px] font-mono bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded">Confidence: 78%</span>
+</div>
+<div class="flex-1 bg-[#0F2340] p-6 rounded-xl shadow-lg border border-slate-700/50 font-serif leading-loose text-slate-300">
+<p class="mb-4">8.4 <span class="bg-blue-900/50 text-blue-200 px-1 border-b border-blue-500/30">Non-Compete Duration</span>: The Executive agrees that during the term of employment and for a period of <span class="bg-blue-900/50 text-blue-200 font-bold px-1 border-b border-blue-500/30">twenty-four (24) months</span> following the termination date...</p>
+<p>8.5 <span class="bg-blue-900/50 text-blue-200 px-1 border-b border-blue-500/30">Geographic Scope</span>: This restriction applies to all business activities within the <span class="bg-blue-900/50 text-blue-200 font-bold px-1 border-b border-blue-500/30">territory of North America</span> where the Company currently maintains operational facilities.</p>
+</div>
+</div>
+<!-- Correction Area -->
+<div class="flex flex-col">
+<div class="flex items-center justify-between mb-3">
+<h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">edit_note</span>
+                                Your Correction
+                            </h3>
+<span class="text-[10px] text-slate-500 italic">Editing now...</span>
+</div>
+<div class="flex-1 bg-[#0F2340] rounded-xl shadow-lg border-2 border-blue-500 overflow-hidden flex flex-col">
+<textarea class="flex-1 p-6 font-serif leading-loose text-slate-200 bg-transparent border-none focus:ring-0 resize-none" spellcheck="false">8.4 Non-Compete Duration: The Executive agrees that during the term of employment and for a period of twenty-four (24) months following the termination date...
+
+8.5 Geographic Scope: This restriction applies to all business activities within the continental United States and Canada where the Company currently maintains operational facilities or has active sales pipelines.</textarea>
+<div class="px-6 py-3 bg-[#1A1A2E] border-t border-slate-700/50 flex justify-between items-center">
+<div class="flex gap-2">
+<button class="material-symbols-outlined text-slate-400 text-lg hover:text-white transition-colors">format_bold</button>
+<button class="material-symbols-outlined text-slate-400 text-lg hover:text-white transition-colors">format_italic</button>
+<button class="material-symbols-outlined text-slate-400 text-lg hover:text-white transition-colors">link</button>
+</div>
+<span class="text-[10px] font-mono text-slate-500">Last saved: 2m ago</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Actions -->
+<div class="p-8 bg-[#0F2340] border-t border-slate-700/50 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="relative">
+<button class="flex items-center gap-2 px-5 py-2.5 bg-transparent border border-red-500 text-red-500 text-sm font-bold rounded-md hover:bg-red-500/10 transition-all">
+<span class="material-symbols-outlined text-lg">close</span>
+                                Reject
+                            </button>
+<div class="absolute -top-1 -right-1 bg-red-500 w-3 h-3 rounded-full flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined text-[8px] text-white">arrow_drop_down</span>
+</div>
+</div>
+<div class="h-8 w-[1px] bg-slate-700 mx-2"></div>
+<button class="text-xs text-slate-400 font-medium underline hover:text-blue-400 transition-colors">Skip and flag for lead counsel</button>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-br from-blue-600 to-blue-800 text-white text-sm font-bold rounded-md hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg">
+<span class="material-symbols-outlined text-lg">fact_check</span>
+                            Approve with Correction
+                        </button>
+<button class="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-br from-emerald-600 to-emerald-800 text-white text-sm font-bold rounded-md hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg">
+<span class="material-symbols-outlined text-lg">check_circle</span>
+                            Approve as-is
+                        </button>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Floating Assistant -->
+<div class="fixed bottom-6 right-6 z-50">
+<button class="w-14 h-14 bg-blue-600 text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all group overflow-hidden border border-white/20">
+<span class="material-symbols-outlined text-2xl group-hover:rotate-12 transition-transform">auto_awesome</span>
+<div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</button>
+</div>
+</body></html>

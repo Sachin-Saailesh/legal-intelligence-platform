@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400&amp;family=Georgia&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "tertiary-fixed": "#d6e3ff",
+                "secondary-fixed": "#d0e4ff",
+                "secondary-fixed-dim": "#9bcbff",
+                "secondary": "#1f6298",
+                "secondary-container": "#8ac3ff",
+                "inverse-surface": "#2e3132",
+                "on-secondary-fixed-variant": "#004a7a",
+                "on-surface": "#e1e3e4",
+                "surface-container-low": "#1E3A5F",
+                "on-secondary": "#ffffff",
+                "on-background": "#e1e3e4",
+                "on-surface-variant": "#c4c6cf",
+                "surface-dim": "#0c1d35",
+                "tertiary-fixed-dim": "#b4c7ec",
+                "inverse-primary": "#adc8f5",
+                "tertiary": "#102441",
+                "primary-fixed": "#d5e3ff",
+                "surface-container": "#1A1A2E",
+                "primary": "#adc8f5",
+                "error-container": "#93000a",
+                "primary-fixed-dim": "#adc8f5",
+                "surface-container-highest": "#334155",
+                "background": "#0F2340",
+                "on-primary": "#00315e",
+                "on-primary-fixed-variant": "#2d486d",
+                "on-secondary-container": "#d0e4ff",
+                "on-tertiary-fixed-variant": "#354766",
+                "surface-container-high": "#1E3A5F",
+                "surface-container-lowest": "#1A1A2E",
+                "error": "#ffb4ab",
+                "on-error": "#690005",
+                "surface-variant": "#43474e",
+                "on-primary-container": "#d5e3ff",
+                "surface": "#0F2340",
+                "on-secondary-fixed": "#001d34",
+                "on-tertiary-fixed": "#061b38",
+                "outline-variant": "#43474e",
+                "on-primary-fixed": "#001c3b",
+                "outline": "#8e9199",
+                "primary-container": "#1e3a5f",
+                "on-tertiary": "#ffffff",
+                "on-tertiary-container": "#d6e3ff",
+                "surface-bright": "#1F2937",
+                "surface-tint": "#adc8f5",
+                "inverse-on-surface": "#191c1d",
+                "tertiary-container": "#283a58",
+                "on-error-container": "#ffdad6"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+            },
+            "fontFamily": {
+                "headline": ["Inter"],
+                "body": ["Inter"],
+                "label": ["Inter"],
+                "mono": ["JetBrains Mono"],
+                "serif": ["Georgia"]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen">
+<!-- SideNavBar Shell -->
+<nav class="flex flex-col h-screen fixed left-0 top-0 bg-[#0c1d35] h-full w-64 shadow-2xl z-50 border-r border-slate-800">
+<div class="px-6 py-8">
+<div class="flex items-center gap-3 mb-10">
+<div class="w-8 h-8 bg-sky-900/50 rounded flex items-center justify-center border border-sky-500/30">
+<span class="material-symbols-outlined text-sky-400 text-xl" data-icon="dashboard">dashboard</span>
+</div>
+<div>
+<h1 class="text-lg font-bold text-white tracking-tight">LexMind</h1>
+<p class="text-[10px] uppercase tracking-widest text-slate-500 font-medium">Hartwell &amp; Associates</p>
+</div>
+</div>
+<div class="space-y-1">
+<!-- Dashboard Active -->
+<a class="flex items-center gap-3 px-4 py-3 bg-[#1E3A5F] text-white border-l-4 border-sky-500 font-sans text-sm font-medium tracking-wide uppercase transition-transform scale-95 active:scale-100" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors font-sans text-sm font-medium tracking-wide uppercase" href="#">
+<span class="material-symbols-outlined" data-icon="folder_shared">folder_shared</span>
+<span>Matters</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors font-sans text-sm font-medium tracking-wide uppercase" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span>Documents</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors font-sans text-sm font-medium tracking-wide uppercase" href="#">
+<span class="material-symbols-outlined" data-icon="search_insights">search_insights</span>
+<span>Query</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors font-sans text-sm font-medium tracking-wide uppercase" href="#">
+<span class="material-symbols-outlined" data-icon="task">task</span>
+<span>Review Queue</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors font-sans text-sm font-medium tracking-wide uppercase" href="#">
+<span class="material-symbols-outlined" data-icon="security">security</span>
+<span>Compliance Alerts</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors font-sans text-sm font-medium tracking-wide uppercase" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</div>
+</div>
+<div class="mt-auto px-6 py-8">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors font-sans text-sm font-medium tracking-wide uppercase" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span>Profile</span>
+</a>
+</div>
+</nav>
+<!-- TopAppBar Shell -->
+<header class="fixed top-0 right-0 flex items-center justify-between px-8 h-16 w-[calc(100%-16rem)] z-40 bg-[#0F2340]/80 backdrop-blur-md border-b border-slate-800">
+<div class="flex items-center gap-6">
+<div class="flex items-center bg-[#1E3A5F] px-3 py-1.5 rounded-lg w-80 border border-slate-700">
+<span class="material-symbols-outlined text-slate-400 text-lg" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-full font-body text-slate-200 placeholder-slate-500" placeholder="Search matters, docs, or intelligence..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-400 hover:text-white transition-opacity duration-150">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="flex items-center gap-3 pl-4 border-l border-slate-700">
+<div class="text-right">
+<p class="text-sm font-semibold text-white">LexMind Intelligence</p>
+<p class="text-[10px] text-sky-400 font-label uppercase tracking-wider">System Active</p>
+</div>
+<span class="material-symbols-outlined text-3xl text-slate-400" data-icon="account_circle">account_circle</span>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 mt-16 p-8 min-h-[calc(100vh-4rem)]">
+<!-- Top Row: Metric Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<!-- Open Matters -->
+<div class="bg-[#1A1A2E] p-6 rounded-xl border border-slate-700 shadow-lg">
+<div class="flex justify-between items-start mb-4">
+<span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 font-label">Open matters</span>
+<span class="material-symbols-outlined text-sky-400" data-icon="folder_open">folder_open</span>
+</div>
+<div class="flex items-baseline gap-3">
+<span class="text-3xl font-bold text-white">248</span>
+<span class="text-xs font-semibold text-green-400 flex items-center">
+<span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span>
+                    12%
+                </span>
+</div>
+<div class="mt-2 text-[10px] text-slate-500 font-mono uppercase italic">vs last quarter</div>
+</div>
+<!-- Pending Reviews -->
+<div class="bg-[#1A1A2E] p-6 rounded-xl border border-slate-700 shadow-lg">
+<div class="flex justify-between items-start mb-4">
+<span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 font-label">Pending reviews</span>
+<span class="material-symbols-outlined text-amber-500" data-icon="pending_actions">pending_actions</span>
+</div>
+<div class="flex items-baseline gap-3">
+<span class="text-3xl font-bold text-white">42</span>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-500/20 text-amber-400 border border-amber-500/30">Amber Status</span>
+</div>
+<div class="mt-2 text-[10px] text-slate-500 font-mono uppercase italic">Avg. Latency: 4.2h</div>
+</div>
+<!-- Unread Alerts -->
+<div class="bg-[#1A1A2E] p-6 rounded-xl border border-slate-700 shadow-lg">
+<div class="flex justify-between items-start mb-4">
+<span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 font-label">Unread alerts</span>
+<span class="material-symbols-outlined text-red-500" data-icon="warning">warning</span>
+</div>
+<div class="flex items-baseline gap-3">
+<span class="text-3xl font-bold text-white">07</span>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-red-500/20 text-red-400 border border-red-500/30">Critical</span>
+</div>
+<div class="mt-2 text-[10px] text-slate-500 font-mono uppercase italic">3 Urgent risk flagged</div>
+</div>
+<!-- Docs Ingested -->
+<div class="bg-[#1A1A2E] p-6 rounded-xl border border-slate-700 shadow-lg">
+<div class="flex justify-between items-start mb-4">
+<span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 font-label">Docs ingested</span>
+<span class="material-symbols-outlined text-sky-400" data-icon="database">database</span>
+</div>
+<div class="flex items-baseline gap-3">
+<span class="text-3xl font-bold text-white">12.4k</span>
+<span class="text-xs text-slate-400 font-medium">+1.2k today</span>
+</div>
+<div class="mt-2 text-[10px] text-slate-500 font-mono uppercase italic">Total Knowledge Base</div>
+</div>
+</div>
+<!-- Second Row: Recent Sessions & Compliance -->
+<div class="grid grid-cols-1 lg:grid-cols-10 gap-8 mb-8">
+<!-- Left (60%): Recent Agent Sessions -->
+<div class="lg:col-span-6 bg-[#1A1A2E] rounded-xl border border-slate-700 shadow-lg overflow-hidden flex flex-col">
+<div class="px-6 py-5 border-b border-slate-700 flex justify-between items-center bg-[#1A1A2E]">
+<h3 class="font-headline font-semibold text-white">Recent agent sessions</h3>
+<button class="text-xs font-bold text-sky-400 uppercase tracking-widest hover:underline">View History</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-[#1E3A5F]">
+<tr>
+<th class="px-6 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-300">Matter</th>
+<th class="px-6 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-300">Query</th>
+<th class="px-6 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-300 text-center">Route</th>
+<th class="px-6 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-300">Confidence</th>
+<th class="px-6 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-300">Status</th>
+<th class="px-6 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-300">Time</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-700">
+<tr class="hover:bg-slate-800/50 transition-colors group">
+<td class="px-6 py-4 font-mono text-xs text-sky-300 font-bold">#2024-HM-92</td>
+<td class="px-6 py-4 text-xs text-slate-400 max-w-[150px] truncate">Review liability clause in Section 4.2 of...</td>
+<td class="px-6 py-4 text-center">
+<span class="px-2 py-0.5 rounded-[4px] text-[9px] font-bold tracking-tight bg-sky-900 text-sky-200 border border-sky-700/50 uppercase">CONTRACT</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex gap-1">
+<div class="h-3 w-3 bg-sky-500 rounded-[1px]"></div>
+<div class="h-3 w-3 bg-sky-500 rounded-[1px]"></div>
+<div class="h-3 w-3 bg-sky-500 rounded-[1px]"></div>
+<div class="h-3 w-3 bg-sky-500 rounded-[1px]"></div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="flex items-center gap-1.5 text-xs font-semibold text-green-400">
+<span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
+                                    Approved
+                                </span>
+</td>
+<td class="px-6 py-4 text-xs font-mono text-slate-500">12:42 PM</td>
+</tr>
+<tr class="hover:bg-slate-800/50 transition-colors group">
+<td class="px-6 py-4 font-mono text-xs text-sky-300 font-bold">#2024-ST-11</td>
+<td class="px-6 py-4 text-xs text-slate-400 max-w-[150px] truncate">Analyze statutory precedents for IP...</td>
+<td class="px-6 py-4 text-center">
+<span class="px-2 py-0.5 rounded-[4px] text-[9px] font-bold tracking-tight bg-slate-700 text-slate-200 border border-slate-600 uppercase">RESEARCH</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex gap-1">
+<div class="h-3 w-3 bg-sky-500 rounded-[1px]"></div>
+<div class="h-3 w-3 bg-sky-500 rounded-[1px]"></div>
+<div class="h-3 w-3 bg-sky-500 rounded-[1px]"></div>
+<div class="h-3 w-3 bg-slate-700 rounded-[1px]"></div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="flex items-center gap-1.5 text-xs font-semibold text-amber-400">
+<span class="material-symbols-outlined text-sm" data-icon="schedule">schedule</span>
+                                    Pending
+                                </span>
+</td>
+<td class="px-6 py-4 text-xs font-mono text-slate-500">11:15 AM</td>
+</tr>
+<tr class="hover:bg-slate-800/50 transition-colors group">
+<td class="px-6 py-4 font-mono text-xs text-sky-300 font-bold">#2024-TX-04</td>
+<td class="px-6 py-4 text-xs text-slate-400 max-w-[150px] truncate">Draft summary of proposed tax amend...</td>
+<td class="px-6 py-4 text-center">
+<span class="px-2 py-0.5 rounded-[4px] text-[9px] font-bold tracking-tight bg-slate-800 text-slate-400 border border-slate-700 uppercase">DRAFT</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex gap-1">
+<div class="h-3 w-3 bg-sky-500 rounded-[1px]"></div>
+<div class="h-3 w-3 bg-slate-700 rounded-[1px]"></div>
+<div class="h-3 w-3 bg-slate-700 rounded-[1px]"></div>
+<div class="h-3 w-3 bg-slate-700 rounded-[1px]"></div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="flex items-center gap-1.5 text-xs font-semibold text-amber-400">
+<span class="material-symbols-outlined text-sm" data-icon="schedule">schedule</span>
+                                    Pending
+                                </span>
+</td>
+<td class="px-6 py-4 text-xs font-mono text-slate-500">09:50 AM</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Right (40%): Compliance Alerts Feed -->
+<div class="lg:col-span-4 bg-[#1A1A2E] rounded-xl border border-slate-700 shadow-lg flex flex-col">
+<div class="px-6 py-5 border-b border-slate-700 flex justify-between items-center bg-[#1A1A2E]">
+<h3 class="font-headline font-semibold text-white">Compliance alerts</h3>
+<span class="material-symbols-outlined text-slate-500" data-icon="more_vert">more_vert</span>
+</div>
+<div class="p-6 space-y-6">
+<div class="flex gap-4">
+<div class="flex-shrink-0 mt-1">
+<span class="w-2 h-2 rounded-full bg-red-500 block shadow-[0_0_8px_rgba(239,68,68,0.5)]"></span>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start mb-1">
+<span class="px-2 py-0.5 rounded-[4px] text-[8px] font-extrabold bg-red-500 text-white uppercase tracking-tighter">CRITICAL</span>
+<span class="text-[10px] font-mono text-slate-500">02:14 PM</span>
+</div>
+<p class="text-sm font-bold text-white mb-0.5 leading-tight">Regulatory Breach Detected</p>
+<p class="text-[11px] text-slate-400 mb-2">Non-compliant data storage identified in international transfer.</p>
+<div class="flex items-center gap-2">
+<span class="text-[10px] font-mono py-0.5 px-1.5 bg-slate-800 rounded text-sky-300">#GLOBAL-X</span>
+<span class="text-[10px] text-sky-400 font-bold underline cursor-pointer">Review Incident</span>
+</div>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="flex-shrink-0 mt-1">
+<span class="w-2 h-2 rounded-full bg-amber-500 block"></span>
+</div>
+<div class="flex-grow border-t border-slate-700 pt-4">
+<div class="flex justify-between items-start mb-1">
+<span class="px-2 py-0.5 rounded-[4px] text-[8px] font-extrabold bg-amber-500 text-white uppercase tracking-tighter">WARNING</span>
+<span class="text-[10px] font-mono text-slate-500">11:45 AM</span>
+</div>
+<p class="text-sm font-bold text-white mb-0.5 leading-tight">Document Expiration Looming</p>
+<p class="text-[11px] text-slate-400 mb-2">NDA for Hartwell Client Group expires in 48 hours.</p>
+<div class="flex items-center gap-2">
+<span class="text-[10px] font-mono py-0.5 px-1.5 bg-slate-800 rounded text-sky-300">#NDA-99</span>
+</div>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="flex-shrink-0 mt-1">
+<span class="w-2 h-2 rounded-full bg-sky-500 block"></span>
+</div>
+<div class="flex-grow border-t border-slate-700 pt-4">
+<div class="flex justify-between items-start mb-1">
+<span class="px-2 py-0.5 rounded-[4px] text-[8px] font-extrabold bg-sky-500 text-white uppercase tracking-tighter">INFO</span>
+<span class="text-[10px] font-mono text-slate-500">09:12 AM</span>
+</div>
+<p class="text-sm font-bold text-white mb-0.5 leading-tight">Agent Model Update</p>
+<p class="text-[11px] text-slate-400 mb-2">Legal Intelligence core updated to v4.8.2-delta.</p>
+</div>
+</div>
+</div>
+<div class="mt-auto p-4 bg-[#1E3A5F] border-t border-slate-700 text-center">
+<button class="text-xs font-semibold text-slate-300 hover:text-white">Dismiss All Alerts</button>
+</div>
+</div>
+</div>
+<!-- Third Row: Matter Activity Timeline -->
+<div class="bg-[#1A1A2E] rounded-xl border border-slate-700 shadow-lg overflow-hidden">
+<div class="px-6 py-5 border-b border-slate-700 flex justify-between items-center">
+<div>
+<h3 class="font-headline font-semibold text-white">Matter activity</h3>
+<p class="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">24-hour intelligent monitoring log</p>
+</div>
+<div class="flex gap-2">
+<button class="px-3 py-1 bg-sky-900/50 rounded text-[10px] font-bold text-sky-300 border border-sky-700/50">TODAY</button>
+<button class="px-3 py-1 text-[10px] font-bold text-slate-400 hover:bg-slate-700 transition-colors rounded">WEEKLY</button>
+</div>
+</div>
+<div class="p-8">
+<div class="relative">
+<!-- Timeline Base Line -->
+<div class="absolute h-[1px] w-full bg-slate-700 top-1/2 left-0 -translate-y-1/2"></div>
+<div class="flex justify-between items-center relative z-10 px-4">
+<div class="flex flex-col items-center gap-6">
+<div class="w-1.5 h-1.5 rounded-full bg-slate-600"></div>
+<span class="text-[9px] font-mono text-slate-500">00:00</span>
+</div>
+<div class="flex flex-col items-center gap-4">
+<div class="relative group">
+<div class="w-3 h-3 rounded-full bg-sky-500 shadow-[0_0_12px_rgba(14,165,233,0.6)]"></div>
+<div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-[#0c1d35] text-white text-[9px] px-2 py-1 rounded border border-slate-700 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                                Matter #402: Ingestion
+                            </div>
+</div>
+<span class="text-[9px] font-mono text-slate-500">04:00</span>
+</div>
+<div class="flex flex-col items-center gap-6">
+<div class="w-1.5 h-1.5 rounded-full bg-slate-600"></div>
+<span class="text-[9px] font-mono text-slate-500">08:00</span>
+</div>
+<div class="flex flex-col items-center gap-4">
+<div class="relative">
+<div class="flex gap-1">
+<div class="w-3 h-3 rounded-full bg-sky-600"></div>
+<div class="w-3 h-3 rounded-full bg-sky-400"></div>
+<div class="w-3 h-3 rounded-full bg-slate-700"></div>
+</div>
+</div>
+<span class="text-[9px] font-mono text-slate-500">12:00</span>
+</div>
+<div class="flex flex-col items-center gap-4">
+<div class="w-5 h-5 rounded-full bg-red-500 border-4 border-[#1A1A2E] shadow-lg"></div>
+<span class="text-[9px] font-mono text-white font-bold">14:00 (Current)</span>
+</div>
+<div class="flex flex-col items-center gap-6">
+<div class="w-1.5 h-1.5 rounded-full border border-slate-700"></div>
+<span class="text-[9px] font-mono text-slate-600">16:00</span>
+</div>
+<div class="flex flex-col items-center gap-6">
+<div class="w-1.5 h-1.5 rounded-full border border-slate-700"></div>
+<span class="text-[9px] font-mono text-slate-600">20:00</span>
+</div>
+<div class="flex flex-col items-center gap-6">
+<div class="w-1.5 h-1.5 rounded-full border border-slate-700"></div>
+<span class="text-[9px] font-mono text-slate-600">00:00</span>
+</div>
+</div>
+</div>
+<div class="mt-10 grid grid-cols-3 gap-6">
+<div class="p-4 bg-[#1E3A5F]/40 rounded-lg border border-slate-700">
+<div class="flex items-center gap-3 mb-2">
+<span class="material-symbols-outlined text-sm text-sky-400" data-icon="bolt">bolt</span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Peak Velocity</span>
+</div>
+<p class="text-lg font-bold text-white">1,240 events/hr</p>
+<p class="text-[10px] text-slate-500 mt-1">Recorded at 12:44 PM during Batch Ingest</p>
+</div>
+<div class="p-4 bg-[#1E3A5F]/40 rounded-lg border border-slate-700">
+<div class="flex items-center gap-3 mb-2">
+<span class="material-symbols-outlined text-sm text-sky-400" data-icon="psychology">psychology</span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Agent Utilization</span>
+</div>
+<p class="text-lg font-bold text-white">88.4%</p>
+<p class="text-[10px] text-slate-500 mt-1">Drafting agent cluster showing high load</p>
+</div>
+<div class="p-4 bg-[#1E3A5F]/40 rounded-lg border border-slate-700">
+<div class="flex items-center gap-3 mb-2">
+<span class="material-symbols-outlined text-sm text-red-400" data-icon="heart_broken">heart_broken</span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">System Latency</span>
+</div>
+<p class="text-lg font-bold text-white">12ms</p>
+<p class="text-[10px] text-slate-500 mt-1">Optimal performance range maintained</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Contextual FAB (Only on Dashboard) -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-br from-sky-600 to-sky-800 text-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.4)] flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-50 border border-sky-400/20">
+<span class="material-symbols-outlined text-2xl" data-icon="add">add</span>
+</button>
+</body></html>

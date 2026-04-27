@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Matters List - LexMind Intelligence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;family=Georgia&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed": "#d6e3ff",
+                        "secondary-fixed": "#d0e4ff",
+                        "secondary-fixed-dim": "#9bcbff",
+                        "secondary": "#38bdf8",
+                        "secondary-container": "#1e3a5f",
+                        "inverse-surface": "#f0f1f2",
+                        "on-secondary-fixed-variant": "#004a7a",
+                        "on-surface": "#f8f9fa",
+                        "surface-container-low": "#1a2b44",
+                        "on-secondary": "#ffffff",
+                        "on-background": "#f8f9fa",
+                        "on-surface-variant": "#c4c6cf",
+                        "surface-dim": "#0a192f",
+                        "tertiary-fixed-dim": "#b4c7ec",
+                        "inverse-primary": "#022448",
+                        "tertiary": "#d6e3ff",
+                        "primary-fixed": "#d5e3ff",
+                        "surface-container": "#152a4a",
+                        "primary": "#38bdf8",
+                        "error-container": "#93000a",
+                        "primary-fixed-dim": "#adc8f5",
+                        "surface-container-highest": "#2c3e5a",
+                        "background": "#0F2340",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed-variant": "#adc8f5",
+                        "on-secondary-container": "#d0e4ff",
+                        "on-tertiary-fixed-variant": "#d6e3ff",
+                        "surface-container-high": "#1e3a5f",
+                        "surface-container-lowest": "#0a192f",
+                        "error": "#ffb4ab",
+                        "on-error": "#690005",
+                        "surface-variant": "#43474e",
+                        "on-primary-container": "#d5e3ff",
+                        "surface": "#0F2340",
+                        "on-secondary-fixed": "#001d34",
+                        "on-tertiary-fixed": "#061b38",
+                        "outline-variant": "#43474e",
+                        "on-primary-fixed": "#001c3b",
+                        "outline": "#8e9199",
+                        "primary-container": "#004a77",
+                        "on-tertiary": "#003062",
+                        "on-tertiary-container": "#d6e3ff",
+                        "surface-bright": "#1a2b44",
+                        "surface-tint": "#adc8f5",
+                        "inverse-on-surface": "#191c1d",
+                        "tertiary-container": "#283a58",
+                        "on-error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"],
+                        "mono": ["JetBrains Mono"],
+                        "serif": ["Georgia"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #43474e; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #8e9199; }
+        .sidebar-active { background-color: #1E3A5F; color: white; border-left: 4px solid #38bdf8; }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased overflow-hidden">
+<!-- SideNavBar -->
+<aside class="flex flex-col h-screen fixed left-0 top-0 bg-[#0A192F] w-64 shadow-2xl z-50 border-r border-white/5">
+<div class="px-6 py-8 flex items-center space-x-3">
+<div class="w-8 h-8 bg-gradient-to-br from-secondary to-primary flex items-center justify-center rounded-md">
+<span class="material-symbols-outlined text-white text-lg" data-icon="gavel">gavel</span>
+</div>
+<div>
+<h1 class="text-lg font-bold text-white tracking-tight leading-none">LexMind</h1>
+<p class="text-[10px] text-primary/70 font-medium tracking-widest uppercase mt-1">Hartwell &amp; Associates</p>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center px-3 py-3 rounded-md text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors group" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="dashboard">dashboard</span>
+<span class="font-sans text-sm font-medium tracking-wide uppercase">Dashboard</span>
+</a>
+<a class="flex items-center px-3 py-3 rounded-md bg-[#1E3A5F] text-white border-l-4 border-sky-400 scale-95 active:scale-100 transition-transform group" href="#">
+<span class="material-symbols-outlined mr-3 text-sky-400" data-icon="folder_shared">folder_shared</span>
+<span class="font-sans text-sm font-medium tracking-wide uppercase">Matters</span>
+</a>
+<a class="flex items-center px-3 py-3 rounded-md text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors group" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="description">description</span>
+<span class="font-sans text-sm font-medium tracking-wide uppercase">Documents</span>
+</a>
+<a class="flex items-center px-3 py-3 rounded-md text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors group" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="search_insights">search_insights</span>
+<span class="font-sans text-sm font-medium tracking-wide uppercase">Query</span>
+</a>
+<a class="flex items-center px-3 py-3 rounded-md text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors group" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="task">task</span>
+<span class="font-sans text-sm font-medium tracking-wide uppercase">Review Queue</span>
+</a>
+<a class="flex items-center px-3 py-3 rounded-md text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors group" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="security">security</span>
+<span class="font-sans text-sm font-medium tracking-wide uppercase">Compliance Alerts</span>
+</a>
+<a class="flex items-center px-3 py-3 rounded-md text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors group" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="settings">settings</span>
+<span class="font-sans text-sm font-medium tracking-wide uppercase">Settings</span>
+</a>
+</nav>
+<div class="p-4 border-t border-slate-700/50">
+<a class="flex items-center px-3 py-3 rounded-md text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors group" href="#">
+<div class="w-8 h-8 rounded-full overflow-hidden mr-3 bg-slate-700">
+<img alt="Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJOa6TaiwX3AVSsWV7eoBkWG-JMyHO4hMohe3M9T7X-8Z3eXP3ILilA_2pTHf9YT3nnhqSFumi_oJeosV3QxnFm41TC2QVe8nC0N64LycLt3VBLaBOVFgL2iAcI_l5F-BrLsIDDewvCVxiOzno3Ai3kqxuSyRTwsermRgxATNplcYT2gzbJCUOHoEKYluNtZqWA9StyLi_IHf_RIv56uj8HnEfZB2bosvTU9Ht9HBtDs4sp6AiO5C2O1Zv8_eGh7E1WT_u_f3unUY"/>
+</div>
+<span class="font-sans text-sm font-medium tracking-wide uppercase">Profile</span>
+</a>
+</div>
+</aside>
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 flex items-center justify-between px-8 z-40 h-16 w-[calc(100%-16rem)] bg-[#0F2340]/80 backdrop-blur-md border-b border-white/5 transition-opacity duration-150">
+<div class="flex items-center flex-1 max-w-xl">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-high border-none rounded-md text-sm text-on-surface focus:ring-2 focus:ring-secondary/50 focus:bg-surface-container transition-all" placeholder="Search LexMind Intelligence..." type="text"/>
+</div>
+</div>
+<div class="flex items-center space-x-6">
+<button class="relative text-slate-400 hover:text-white transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-0.5 right-0.5 w-2 h-2 bg-red-500 rounded-full border border-[#0F2340]"></span>
+</button>
+<div class="h-8 w-px bg-slate-700"></div>
+<div class="flex items-center space-x-3 text-slate-300">
+<span class="text-sm font-semibold text-white/90">LexMind Intelligence</span>
+<span class="material-symbols-outlined text-white/60" data-icon="account_circle">account_circle</span>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="ml-64 pt-16 h-screen overflow-y-auto bg-surface">
+<div class="max-w-[1400px] mx-auto p-8 space-y-8">
+<!-- Header Section -->
+<div class="flex items-end justify-between">
+<div>
+<nav class="flex items-center space-x-2 text-xs font-medium text-on-surface-variant uppercase tracking-widest mb-2">
+<span>Legal Operations</span>
+<span class="material-symbols-outlined text-[14px]" data-icon="chevron_right">chevron_right</span>
+<span class="text-secondary font-bold">Matters</span>
+</nav>
+<h2 class="text-3xl font-extrabold text-on-surface tracking-tight">Matters</h2>
+</div>
+<button class="flex items-center px-5 py-2.5 bg-gradient-to-br from-secondary to-blue-600 text-[#0F2340] text-sm font-bold rounded-md shadow-lg shadow-secondary/20 hover:brightness-110 active:scale-95 transition-all">
+<span class="material-symbols-outlined mr-2 text-[20px]" data-icon="add_circle">add_circle</span>
+                    New matter
+                </button>
+</div>
+<!-- Filter & Action Bar -->
+<div class="bg-surface-container-high rounded-lg p-1.5 shadow-lg flex flex-col md:flex-row items-center justify-between gap-4 border border-white/5">
+<div class="flex items-center bg-surface-container-low rounded p-1">
+<button class="px-6 py-2 text-xs font-bold uppercase tracking-wider text-[#0F2340] bg-secondary rounded shadow-sm">All</button>
+<button class="px-6 py-2 text-xs font-bold uppercase tracking-wider text-on-surface-variant hover:text-white transition-colors">Active</button>
+<button class="px-6 py-2 text-xs font-bold uppercase tracking-wider text-on-surface-variant hover:text-white transition-colors">Closed</button>
+</div>
+<div class="flex items-center space-x-2">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mr-2">Filter By:</span>
+<span class="px-3 py-1 bg-secondary text-[#0F2340] text-[10px] font-bold rounded-sm uppercase tracking-tighter cursor-pointer flex items-center">
+                        Contract <span class="material-symbols-outlined text-[12px] ml-1" data-icon="close">close</span>
+</span>
+<span class="px-3 py-1 bg-surface-container text-on-surface text-[10px] font-bold rounded-sm uppercase tracking-tighter cursor-pointer hover:bg-surface-container-highest transition-colors">
+                        Litigation
+                    </span>
+<span class="px-3 py-1 bg-surface-container text-on-surface text-[10px] font-bold rounded-sm uppercase tracking-tighter cursor-pointer hover:bg-surface-container-highest transition-colors">
+                        Compliance
+                    </span>
+<div class="w-px h-6 bg-white/10 mx-2"></div>
+<button class="flex items-center text-on-surface-variant hover:text-white transition-colors">
+<span class="material-symbols-outlined" data-icon="filter_list">filter_list</span>
+</button>
+</div>
+</div>
+<!-- Table Container -->
+<div class="bg-[#152a4a] rounded-lg shadow-2xl overflow-hidden border border-white/5">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-high/50 sticky top-0 z-10 border-b border-white/5">
+<th class="px-6 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Matter name</th>
+<th class="px-6 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Type</th>
+<th class="px-6 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Docs</th>
+<th class="px-6 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Alerts</th>
+<th class="px-6 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Last activity</th>
+<th class="px-6 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest">Status</th>
+<th class="px-6 py-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-widest text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-high transition-colors group">
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="text-sm font-bold text-on-surface leading-tight group-hover:text-secondary transition-colors">Project Alpha-2024: MSA Renewal</span>
+<span class="text-xs font-mono text-on-surface-variant/50 mt-1">REF: #LXM-982-1</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="px-2 py-0.5 bg-secondary text-[#0F2340] text-[10px] font-bold rounded-sm uppercase tracking-tighter">CONTRACT</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center text-sm font-medium text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px] mr-1.5 opacity-50" data-icon="description">description</span>
+                                        12
+                                    </div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center">
+<span class="px-2 py-0.5 bg-red-500/80 text-white text-[10px] font-bold rounded-full">3</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="text-xs font-medium text-on-surface-variant">2h ago by Agent_01</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center">
+<div class="w-2 h-2 rounded-full bg-secondary mr-2 shadow-[0_0_8px_rgba(56,189,248,0.5)]"></div>
+<span class="text-[11px] font-bold uppercase tracking-wider text-secondary">In Review</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="p-1 hover:bg-white/10 rounded-md transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="bg-white/[0.02] hover:bg-surface-container-high transition-colors group">
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="text-sm font-bold text-on-surface leading-tight group-hover:text-secondary transition-colors">Global Logistics v. Thompson LLC</span>
+<span class="text-xs font-mono text-on-surface-variant/50 mt-1">REF: #LXM-044-L</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="px-2 py-0.5 bg-white/10 text-white/90 text-[10px] font-bold rounded-sm uppercase tracking-tighter">LITIGATION</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center text-sm font-medium text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px] mr-1.5 opacity-50" data-icon="description">description</span>
+                                        84
+                                    </div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center">
+<span class="px-2 py-0.5 bg-white/5 text-on-surface-variant text-[10px] font-bold rounded-full">0</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="text-xs font-medium text-on-surface-variant">Oct 24, 2023</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center">
+<div class="w-2 h-2 rounded-full bg-slate-500 mr-2"></div>
+<span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Discovery</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="p-1 hover:bg-white/10 rounded-md transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-high transition-colors group">
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="text-sm font-bold text-on-surface leading-tight group-hover:text-secondary transition-colors">GDPR Audit Readiness - Q4</span>
+<span class="text-xs font-mono text-on-surface-variant/50 mt-1">REF: #LXM-112-C</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="px-2 py-0.5 bg-white/10 text-white/90 text-[10px] font-bold rounded-sm uppercase tracking-tighter">COMPLIANCE</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center text-sm font-medium text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px] mr-1.5 opacity-50" data-icon="description">description</span>
+                                        4
+                                    </div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center">
+<span class="px-2 py-0.5 bg-red-500/80 text-white text-[10px] font-bold rounded-full">1</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="text-xs font-medium text-on-surface-variant">10m ago by System</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center">
+<div class="w-2 h-2 rounded-full bg-emerald-400 mr-2 shadow-[0_0_8px_rgba(52,211,153,0.5)]"></div>
+<span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Active</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="p-1 hover:bg-white/10 rounded-md transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="bg-white/[0.02] hover:bg-surface-container-high transition-colors group">
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="text-sm font-bold text-on-surface leading-tight group-hover:text-secondary transition-colors">Merger Agreement: Stellar Systems</span>
+<span class="text-xs font-mono text-on-surface-variant/50 mt-1">REF: #LXM-001-M</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="px-2 py-0.5 bg-secondary text-[#0F2340] text-[10px] font-bold rounded-sm uppercase tracking-tighter">CONTRACT</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center text-sm font-medium text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px] mr-1.5 opacity-50" data-icon="description">description</span>
+                                        245
+                                    </div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center">
+<span class="px-2 py-0.5 bg-white/5 text-on-surface-variant text-[10px] font-bold rounded-full">0</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="text-xs font-medium text-on-surface-variant">Yesterday</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center">
+<div class="w-2 h-2 rounded-full bg-blue-400 mr-2"></div>
+<span class="text-[11px] font-bold uppercase tracking-wider text-blue-300">Archived</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="p-1 hover:bg-white/10 rounded-md transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-container-high transition-colors group">
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="text-sm font-bold text-on-surface leading-tight group-hover:text-secondary transition-colors">Employee Handbook Revision 2024</span>
+<span class="text-xs font-mono text-on-surface-variant/50 mt-1">REF: #LXM-774-E</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="px-2 py-0.5 bg-white/10 text-white/90 text-[10px] font-bold rounded-sm uppercase tracking-tighter">COMPLIANCE</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center text-sm font-medium text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px] mr-1.5 opacity-50" data-icon="description">description</span>
+                                        1
+                                    </div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center">
+<span class="px-2 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full">12</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="text-xs font-medium text-on-surface-variant">1h ago by HR_Admin</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center">
+<div class="w-2 h-2 rounded-full bg-red-400 mr-2 shadow-[0_0_8px_rgba(248,113,113,0.5)]"></div>
+<span class="text-[11px] font-bold uppercase tracking-wider text-red-400">Urgent Action</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="p-1 hover:bg-white/10 rounded-md transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination / Footer -->
+<div class="px-6 py-4 bg-surface-container-high/30 flex items-center justify-between border-t border-white/5">
+<span class="text-xs font-medium text-on-surface-variant">Showing 1 to 5 of 48 matters</span>
+<div class="flex items-center space-x-2">
+<button class="p-2 border border-white/10 rounded-md text-on-surface-variant opacity-30 cursor-not-allowed">
+<span class="material-symbols-outlined text-[18px]" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="px-3 py-1 bg-secondary text-[#0F2340] text-xs font-bold rounded-md">1</button>
+<button class="px-3 py-1 hover:bg-white/10 text-on-surface-variant text-xs font-bold rounded-md transition-colors">2</button>
+<button class="px-3 py-1 hover:bg-white/10 text-on-surface-variant text-xs font-bold rounded-md transition-colors">3</button>
+<span class="text-on-surface-variant text-xs">...</span>
+<button class="px-3 py-1 hover:bg-white/10 text-on-surface-variant text-xs font-bold rounded-md transition-colors">10</button>
+<button class="p-2 border border-white/10 rounded-md text-on-surface-variant hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Contextual Intelligence Card -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="md:col-span-2 bg-gradient-to-br from-[#1E3A5F] to-[#0A192F] p-6 rounded-lg text-white border border-white/10 relative overflow-hidden group">
+<div class="relative z-10 flex items-start justify-between">
+<div class="max-w-md">
+<h3 class="text-xl font-bold mb-2">Intelligence Advisory</h3>
+<p class="text-sm text-slate-300 leading-relaxed">Agent LexMind has detected that 3 of your active matters have upcoming regulatory deadlines within the next 72 hours. We recommend prioritizing the <span class="font-bold text-secondary">Employee Handbook Revision</span>.</p>
+<button class="mt-4 px-4 py-2 bg-secondary text-[#0F2340] text-xs font-bold uppercase tracking-widest rounded-md hover:brightness-110 transition-all">Review Priorities</button>
+</div>
+<span class="material-symbols-outlined text-6xl opacity-10 scale-150 group-hover:scale-110 transition-transform duration-500" data-icon="auto_awesome">auto_awesome</span>
+</div>
+</div>
+<div class="bg-surface-container-high p-6 rounded-lg border border-white/5 flex flex-col justify-between shadow-lg">
+<div>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Active Alerts</span>
+<h4 class="text-2xl font-black text-white mt-1">16</h4>
+</div>
+<div class="flex items-end justify-between mt-4">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full border-2 border-[#1e3a5f] bg-primary overflow-hidden">
+<img alt="Legal Ops" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDV4HnEQx7COuzGFpSnZuLHgogget3I01pHzgRVIoV1dI_SN-sUn0i00hFF_zAX9C_btgLxMNKfgwmbvQ85QYEhmEreogHjG4Juw7jg75KGrl2KgkUB0hogUBKHD36P_YX3gnOpSdflJcuJKhoXx00E_enwo3P7JiUnHUjQCEFXHD90iH7DAnWFFYsqUeZvxH6tDzpV9CFChyQ0w0_efTtuS9mBsRvtqbiYFDuaav56QOKVN65baeU-7yno42M4WO1y1STiTKkUv_s"/>
+</div>
+<div class="w-8 h-8 rounded-full border-2 border-[#1e3a5f] bg-secondary overflow-hidden">
+<img alt="Partner" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0kZJu51UF9pqgGIXFvfclX2O9lAOApnshvwZUhp1HUgL-AlJZ8BI8yzee1KWZwB-Z_VoR-96scjKEgDBHPvLTbZucqDtFdgOK1_JXjZc3Wl8LyTI9ZtyCWaWk4IjS5Cdjxm4HNEgEY5FMTdoqLkOx66HZtGZk2bFJ_2GXkKr21sn9AHJzSwnOF4kmNCajZE2Lwu2Hnt2NS5m37tCClU-xTJ1MSWMe4Wt0uLZMHcpXw_LOScZQncUMiTUXqLwhhdc9vZ9qgOv8y_o"/>
+</div>
+<div class="w-8 h-8 rounded-full border-2 border-[#1e3a5f] bg-slate-700 flex items-center justify-center text-[10px] font-bold text-on-surface">+12</div>
+</div>
+<span class="text-[10px] font-bold text-red-400 uppercase tracking-tighter flex items-center">
+<span class="material-symbols-outlined text-[14px] mr-1" data-icon="trending_up">trending_up</span>
+                            +4 this week
+                        </span>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

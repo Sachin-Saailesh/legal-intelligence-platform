@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+  line-height: 1;
+  display: inline-block;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+/* Markdown prose for dark context */
+.lex-prose { color: #e1e3e4; line-height: 1.7; font-size: 0.875rem; }
+.lex-prose h1,.lex-prose h2,.lex-prose h3 { color: #f1f5f9; font-weight: 600; margin: 0.75em 0 0.35em; }
+.lex-prose p { margin-bottom: 0.6em; }
+.lex-prose ul,.lex-prose ol { padding-left: 1.25em; margin-bottom: 0.6em; }
+.lex-prose li { margin-bottom: 0.2em; }
+.lex-prose strong { color: #f1f5f9; }
+.lex-prose code { font-family: 'JetBrains Mono', monospace; color: #adc8f5; background: rgba(173,200,245,0.1); padding: 0.1em 0.3em; border-radius: 3px; font-size: 0.8em; }
+.lex-prose pre { background: #0A192F; border: 1px solid #334155; border-radius: 6px; padding: 1em; overflow-x: auto; margin-bottom: 1em; }
+.lex-prose blockquote { border-left: 3px solid #38bdf8; padding-left: 1em; color: #94a3b8; }

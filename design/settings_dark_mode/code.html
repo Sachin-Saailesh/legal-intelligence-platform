@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settings | LexMind Intelligence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;family=Georgia&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed": "#283a58",
+                        "secondary-fixed": "#004a7a",
+                        "secondary-fixed-dim": "#9bcbff",
+                        "secondary": "#8ac3ff",
+                        "secondary-container": "#1e3a5f",
+                        "inverse-surface": "#f8f9fa",
+                        "on-secondary-fixed-variant": "#d0e4ff",
+                        "on-surface": "#e1e3e4",
+                        "surface-container-low": "#1A2E44",
+                        "on-secondary": "#003355",
+                        "on-background": "#e1e3e4",
+                        "on-surface-variant": "#c4c6cf",
+                        "surface-dim": "#0F2340",
+                        "tertiary-fixed-dim": "#b4c7ec",
+                        "inverse-primary": "#022448",
+                        "tertiary": "#d6e3ff",
+                        "primary-fixed": "#d5e3ff",
+                        "surface-container": "#1E3A5F",
+                        "primary": "#adc8f5",
+                        "error-container": "#93000a",
+                        "primary-fixed-dim": "#adc8f5",
+                        "surface-container-highest": "#2e3132",
+                        "background": "#0F2340",
+                        "on-primary": "#001c3b",
+                        "on-primary-fixed-variant": "#adc8f5",
+                        "on-secondary-container": "#d0e4ff",
+                        "on-tertiary-fixed-variant": "#b4c7ec",
+                        "surface-container-high": "#254061",
+                        "surface-container-lowest": "#162B46",
+                        "error": "#ffdad6",
+                        "on-error": "#690005",
+                        "surface-variant": "#43474e",
+                        "on-primary-container": "#d5e3ff",
+                        "surface": "#0F2340",
+                        "on-secondary-fixed": "#ffffff",
+                        "on-tertiary-fixed": "#ffffff",
+                        "outline-variant": "#43474e",
+                        "on-primary-fixed": "#001c3b",
+                        "outline": "#8e9199",
+                        "primary-container": "#2d486d",
+                        "on-tertiary": "#061b38",
+                        "on-tertiary-container": "#d6e3ff",
+                        "surface-bright": "#1a1c1e",
+                        "surface-tint": "#adc8f5",
+                        "inverse-on-surface": "#191c1d",
+                        "tertiary-container": "#354766",
+                        "on-error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"],
+                        "mono": ["JetBrains Mono"],
+                        "document": ["Georgia"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-pill {
+            background: linear-gradient(135deg, #ADC8F5 0%, #70A1E5 100%);
+        }
+        body { font-family: 'Inter', sans-serif; }
+        /* Custom scrollbar for dark mode */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0F2340; }
+        ::-webkit-scrollbar-thumb { background: #1E3A5F; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #2d486d; }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- SideNavBar (Execution from JSON) -->
+<aside class="flex flex-col h-screen fixed left-0 top-0 bg-[#0A192F] w-64 shadow-2xl z-50 border-r border-white/5">
+<div class="p-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-primary-container flex items-center justify-center rounded-lg">
+<span class="material-symbols-outlined text-sky-400" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+</div>
+<div>
+<h1 class="text-lg font-bold text-white tracking-tight">LexMind</h1>
+<p class="text-[10px] uppercase tracking-widest text-slate-400 font-medium">Hartwell &amp; Associates</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors font-sans text-sm font-medium tracking-wide uppercase" href="#">
+<span class="material-symbols-outlined text-xl">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors font-sans text-sm font-medium tracking-wide uppercase" href="#">
+<span class="material-symbols-outlined text-xl">folder_shared</span>
+<span>Matters</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors font-sans text-sm font-medium tracking-wide uppercase" href="#">
+<span class="material-symbols-outlined text-xl">description</span>
+<span>Documents</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors font-sans text-sm font-medium tracking-wide uppercase" href="#">
+<span class="material-symbols-outlined text-xl">search_insights</span>
+<span>Query</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors font-sans text-sm font-medium tracking-wide uppercase" href="#">
+<span class="material-symbols-outlined text-xl">task</span>
+<span>Review Queue</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white hover:bg-[#1E3A5F]/50 transition-colors font-sans text-sm font-medium tracking-wide uppercase" href="#">
+<span class="material-symbols-outlined text-xl">security</span>
+<span>Compliance Alerts</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-[#1E3A5F] text-white border-l-4 border-sky-500 font-sans text-sm font-medium tracking-wide uppercase" href="#">
+<span class="material-symbols-outlined text-xl">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<div class="p-4 border-t border-white/5">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white transition-colors font-sans text-sm font-medium tracking-wide uppercase" href="#">
+<span class="material-symbols-outlined text-xl">account_circle</span>
+<span>Profile</span>
+</a>
+</div>
+</aside>
+<!-- TopAppBar (Execution from JSON) -->
+<header class="fixed top-0 right-0 h-16 w-[calc(100%-16rem)] flex items-center justify-between px-8 z-40 bg-[#0F2340]/80 backdrop-blur-md border-b border-white/5">
+<div class="flex items-center gap-4 flex-1 max-w-xl">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
+<input class="w-full bg-surface-container-high text-on-surface rounded-lg pl-10 pr-4 py-2 text-sm border-none focus:ring-1 focus:ring-primary focus:bg-surface-container transition-all placeholder:text-on-surface-variant/50" placeholder="Search system settings..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Environment</span>
+<span class="px-2 py-0.5 bg-secondary/20 text-secondary text-[10px] font-bold rounded border border-secondary/30">PRODUCTION</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors">notifications</span>
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center text-xs font-bold ring-2 ring-white/10">HA</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 mt-16 p-10 max-w-[1400px]">
+<div class="mb-10">
+<h2 class="text-3xl font-bold text-primary tracking-tight mb-2">Platform Configuration</h2>
+<p class="text-on-surface-variant text-sm max-w-2xl font-medium">Manage your firm's administrative controls, integrate secure LLM endpoints, and define intelligence agent sensitivity thresholds.</p>
+</div>
+<!-- Settings Layout: Asymmetric Bento Grid -->
+<div class="grid grid-cols-12 gap-8">
+<!-- Sidebar Sub-Nav -->
+<div class="col-span-3 space-y-1">
+<button class="w-full text-left px-4 py-3 rounded-lg bg-primary-container text-white font-bold text-sm flex items-center justify-between group">
+                    Firm Settings
+                    <span class="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</button>
+<button class="w-full text-left px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-semibold text-sm flex items-center justify-between group transition-colors">
+                    Integrations
+                    <span class="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</button>
+<button class="w-full text-left px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-semibold text-sm flex items-center justify-between group transition-colors">
+                    Agent Intelligence
+                    <span class="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</button>
+<button class="w-full text-left px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-semibold text-sm flex items-center justify-between group transition-colors">
+                    Team &amp; Governance
+                    <span class="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</button>
+<button class="w-full text-left px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-semibold text-sm flex items-center justify-between group transition-colors">
+                    Regulatory Feeds
+                    <span class="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</button>
+<div class="pt-8 px-4">
+<div class="p-4 bg-tertiary-container rounded-xl border border-tertiary/20">
+<span class="material-symbols-outlined text-primary mb-2 block">verified_user</span>
+<p class="text-xs text-primary font-bold mb-1">Security Audit</p>
+<p class="text-[10px] text-on-surface-variant leading-relaxed">Last compliance audit was completed 12 days ago. No vulnerabilities found.</p>
+</div>
+</div>
+</div>
+<!-- Configuration Panels -->
+<div class="col-span-9 space-y-12">
+<!-- Section: Firm Identity -->
+<section>
+<div class="mb-6 flex items-end justify-between">
+<h3 class="text-sm font-bold uppercase tracking-[0.15em] text-on-surface-variant">Firm Identity</h3>
+<div class="h-[1px] flex-1 bg-white/10 mx-6 mb-2"></div>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-xl border border-white/5 space-y-6">
+<div class="grid grid-cols-2 gap-8">
+<div class="space-y-2">
+<label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Firm Registered Name</label>
+<input class="w-full bg-surface-container-low text-on-surface rounded-lg px-4 py-3 border-none focus:ring-2 focus:ring-primary/20 text-sm font-medium" type="text" value="Hartwell &amp; Associates LLP"/>
+</div>
+<div class="space-y-2">
+<label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Operational Timezone</label>
+<select class="w-full bg-surface-container-low text-on-surface rounded-lg px-4 py-3 border-none focus:ring-2 focus:ring-primary/20 text-sm font-medium">
+<option>(GMT-05:00) Eastern Time (US &amp; Canada)</option>
+<option>(GMT-08:00) Pacific Time (US &amp; Canada)</option>
+<option>(GMT+00:00) London</option>
+</select>
+</div>
+</div>
+<div class="flex items-center gap-6 p-4 bg-surface-container-low rounded-lg">
+<div class="w-20 h-20 bg-surface-container-highest rounded-lg border-2 border-dashed border-white/10 flex flex-col items-center justify-center text-on-surface-variant gap-1">
+<span class="material-symbols-outlined">upload_file</span>
+<span class="text-[9px] font-bold">REPLACE</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold text-primary mb-1">Firm Logo (Master Brand)</p>
+<p class="text-xs text-on-surface-variant">High-resolution SVG or PNG. This will appear on all generated legal reports and client exports.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: AI Infrastructure (Azure OpenAI) -->
+<section>
+<div class="mb-6 flex items-end justify-between">
+<h3 class="text-sm font-bold uppercase tracking-[0.15em] text-on-surface-variant">Model Infrastructure</h3>
+<div class="h-[1px] flex-1 bg-white/10 mx-6 mb-2"></div>
+<div class="px-2 py-1 bg-secondary text-on-secondary text-[10px] font-extrabold rounded">AZURE MANAGED</div>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-xl border border-white/5 space-y-6">
+<div class="grid grid-cols-1 gap-6">
+<div class="space-y-2">
+<label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Azure OpenAI Endpoint</label>
+<div class="flex gap-2">
+<input class="flex-1 bg-surface-container-low rounded-lg px-4 py-3 border-none focus:ring-2 focus:ring-primary/20 text-sm font-mono text-secondary" type="text" value="https://lexmind-internal-eastus.openai.azure.com/"/>
+<button class="px-6 py-2 bg-primary-container text-white text-xs font-bold rounded-lg hover:bg-primary transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">settings_ethernet</span>
+                                        TEST CONNECTIVITY
+                                    </button>
+</div>
+</div>
+<div class="space-y-2">
+<label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">API Authentication Key</label>
+<div class="relative">
+<input class="w-full bg-surface-container-low text-on-surface rounded-lg px-4 py-3 border-none focus:ring-2 focus:ring-primary/20 text-sm font-mono" type="password" value="••••••••••••••••••••••••••••••••"/>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant cursor-pointer">visibility</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Agent Configuration -->
+<section>
+<div class="mb-6 flex items-end justify-between">
+<h3 class="text-sm font-bold uppercase tracking-[0.15em] text-on-surface-variant">Intelligence Calibration</h3>
+<div class="h-[1px] flex-1 bg-white/10 mx-6 mb-2"></div>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<!-- Confidence Threshold -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-white/5">
+<div class="flex justify-between items-center mb-6">
+<div>
+<h4 class="text-sm font-bold text-primary">Confidence Threshold</h4>
+<p class="text-[11px] text-on-surface-variant">Minimum score for autonomous routing.</p>
+</div>
+<span class="text-xl font-mono font-bold text-secondary">0.85</span>
+</div>
+<input class="w-full h-1.5 bg-surface-container-high rounded-lg appearance-none cursor-pointer accent-secondary" max="0.9" min="0.5" step="0.05" type="range" value="0.85"/>
+<div class="flex justify-between mt-2 text-[9px] font-bold text-on-surface-variant uppercase">
+<span>Permissive (0.5)</span>
+<span>Rigorous (0.9)</span>
+</div>
+</div>
+<!-- Hallucination Guard -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-white/5">
+<h4 class="text-sm font-bold text-primary mb-4">Hallucination Guard Sensitivity</h4>
+<div class="flex gap-2">
+<button class="flex-1 py-2 text-[10px] font-bold rounded-md bg-surface-container-high text-on-surface-variant border border-white/5 hover:border-primary transition-all">RELAXED</button>
+<button class="flex-1 py-2 text-[10px] font-bold rounded-md active-pill text-on-primary shadow-lg shadow-primary/20">STANDARD</button>
+<button class="flex-1 py-2 text-[10px] font-bold rounded-md bg-surface-container-high text-on-surface-variant border border-white/5 hover:border-primary transition-all">STRICT</button>
+</div>
+<p class="mt-4 text-[10px] text-on-surface-variant italic leading-tight">Recommended for general legal research and initial drafting. Standard validation loops active.</p>
+</div>
+</div>
+</section>
+<!-- Section: Regulatory Feeds (Table Style) -->
+<section>
+<div class="mb-6 flex items-end justify-between">
+<h3 class="text-sm font-bold uppercase tracking-[0.15em] text-on-surface-variant">Regulatory Sync Engines</h3>
+<div class="h-[1px] flex-1 bg-white/10 mx-6 mb-2"></div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-xl border border-white/5">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-low">
+<th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Feed Provider</th>
+<th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Sync Status</th>
+<th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider text-right">Integrate</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+<tr class="hover:bg-white/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">SEC</div>
+<div>
+<p class="text-sm font-bold text-on-surface leading-none">SEC EDGAR Global</p>
+<p class="text-[10px] text-on-surface-variant">Real-time corporate filings &amp; disclosures</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-green-400"></div>
+<span class="text-xs font-semibold text-on-surface">Active • Latency 24ms</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end">
+<div class="w-10 h-5 bg-primary/40 rounded-full flex items-center px-1">
+<div class="w-3.5 h-3.5 bg-white rounded-full ml-auto"></div>
+</div>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-white/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">FIN</div>
+<div>
+<p class="text-sm font-bold text-on-surface leading-none">FINRA Regulatory Alerts</p>
+<p class="text-[10px] text-on-surface-variant">Broker-dealer compliance updates</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-slate-500"></div>
+<span class="text-xs font-semibold text-on-surface-variant">Idle • Last sync 4h ago</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end">
+<div class="w-10 h-5 bg-white/10 rounded-full flex items-center px-1">
+<div class="w-3.5 h-3.5 bg-white/50 rounded-full"></div>
+</div>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-white/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">UK</div>
+<div>
+<p class="text-sm font-bold text-on-surface leading-none">UK Companies House</p>
+<p class="text-[10px] text-on-surface-variant">Cross-border entity verification</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-green-400"></div>
+<span class="text-xs font-semibold text-on-surface">Active • Latency 112ms</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end">
+<div class="w-10 h-5 bg-primary/40 rounded-full flex items-center px-1">
+<div class="w-3.5 h-3.5 bg-white rounded-full ml-auto"></div>
+</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Footer Action Bar -->
+<div class="flex items-center justify-between pt-6 border-t border-white/10">
+<button class="px-4 py-2 text-xs font-bold text-error hover:bg-error/10 rounded-lg transition-colors">RESET ALL CHANGES</button>
+<div class="flex gap-4">
+<button class="px-6 py-2.5 text-sm font-bold text-on-surface-variant hover:text-on-surface hover:bg-white/5 rounded-lg transition-colors">Discard</button>
+<button class="px-8 py-2.5 active-pill text-on-primary text-sm font-bold rounded-lg shadow-lg shadow-primary/20">Save Configuration</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

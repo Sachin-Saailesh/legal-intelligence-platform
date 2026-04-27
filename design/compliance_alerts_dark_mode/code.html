@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LexMind Intelligence | Compliance Alert Inbox</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;family=Georgia&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "tertiary-fixed": "#d6e3ff",
+                "secondary-fixed": "#d0e4ff",
+                "secondary-fixed-dim": "#9bcbff",
+                "secondary": "#3b82f6",
+                "secondary-container": "#1e3a5f",
+                "inverse-surface": "#2e3132",
+                "on-secondary-fixed-variant": "#004a7a",
+                "on-surface": "#e2e8f0",
+                "surface-container-low": "#162b45",
+                "on-secondary": "#ffffff",
+                "on-background": "#f8f9fa",
+                "on-surface-variant": "#94a3b8",
+                "surface-dim": "#0a192f",
+                "tertiary-fixed-dim": "#b4c7ec",
+                "inverse-primary": "#adc8f5",
+                "tertiary": "#102441",
+                "primary-fixed": "#d5e3ff",
+                "surface-container": "#1e3a5f",
+                "primary": "#38bdf8",
+                "error-container": "#450a0a",
+                "primary-fixed-dim": "#adc8f5",
+                "surface-container-highest": "#24436c",
+                "background": "#0F2340",
+                "on-primary": "#082f49",
+                "on-primary-fixed-variant": "#2d486d",
+                "on-secondary-container": "#d0e4ff",
+                "on-tertiary-fixed-variant": "#354766",
+                "surface-container-high": "#24436c",
+                "surface-container-lowest": "#1e3a5f",
+                "error": "#f87171",
+                "on-error": "#ffffff",
+                "surface-variant": "#43474e",
+                "on-primary-container": "#bae6fd",
+                "surface": "#0F2340",
+                "on-secondary-fixed": "#001d34",
+                "on-tertiary-fixed": "#061b38",
+                "outline-variant": "#334155",
+                "on-primary-fixed": "#001c3b",
+                "outline": "#64748b",
+                "primary-container": "#0369a1",
+                "on-tertiary": "#ffffff",
+                "on-tertiary-container": "#92a4c8",
+                "surface-bright": "#1e3a5f",
+                "surface-tint": "#38bdf8",
+                "inverse-on-surface": "#0F2340",
+                "tertiary-container": "#283a58",
+                "on-error-container": "#fecaca"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+            },
+            "fontFamily": {
+                "headline": ["Inter"],
+                "body": ["Inter"],
+                "label": ["Inter"],
+                "mono": ["JetBrains Mono"],
+                "document": ["Georgia"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .editorial-shadow {
+            box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.4);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary-container selection:text-white">
+<!-- Sidebar Navigation -->
+<aside class="flex flex-col h-screen fixed left-0 top-0 bg-[#0A192F] docked left-0 h-full w-64 shadow-2xl z-50 border-r border-white/5">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-8">
+<div class="w-8 h-8 bg-gradient-to-br from-sky-600 to-sky-800 flex items-center justify-center rounded-lg shadow-inner">
+<span class="material-symbols-outlined text-white text-lg">gavel</span>
+</div>
+<div>
+<h1 class="text-lg font-bold text-white tracking-tight">LexMind</h1>
+<p class="text-[10px] text-sky-400 font-medium uppercase tracking-[0.2em]">Hartwell &amp; Associates</p>
+</div>
+</div>
+<nav class="space-y-1">
+<!-- Nav Item: Dashboard -->
+<a class="flex items-center gap-3 px-3 py-2.5 font-sans text-sm font-medium tracking-wide uppercase transition-colors text-slate-400 hover:text-white hover:bg-white/5 group" href="#">
+<span class="material-symbols-outlined text-xl">dashboard</span>
+<span>Dashboard</span>
+</a>
+<!-- Nav Item: Matters -->
+<a class="flex items-center gap-3 px-3 py-2.5 font-sans text-sm font-medium tracking-wide uppercase transition-colors text-slate-400 hover:text-white hover:bg-white/5 group" href="#">
+<span class="material-symbols-outlined text-xl">folder_shared</span>
+<span>Matters</span>
+</a>
+<!-- Nav Item: Documents -->
+<a class="flex items-center gap-3 px-3 py-2.5 font-sans text-sm font-medium tracking-wide uppercase transition-colors text-slate-400 hover:text-white hover:bg-white/5 group" href="#">
+<span class="material-symbols-outlined text-xl">description</span>
+<span>Documents</span>
+</a>
+<!-- Nav Item: Query -->
+<a class="flex items-center gap-3 px-3 py-2.5 font-sans text-sm font-medium tracking-wide uppercase transition-colors text-slate-400 hover:text-white hover:bg-white/5 group" href="#">
+<span class="material-symbols-outlined text-xl">search_insights</span>
+<span>Query</span>
+</a>
+<!-- Nav Item: Review Queue -->
+<a class="flex items-center gap-3 px-3 py-2.5 font-sans text-sm font-medium tracking-wide uppercase transition-colors text-slate-400 hover:text-white hover:bg-white/5 group" href="#">
+<span class="material-symbols-outlined text-xl">task</span>
+<span>Review Queue</span>
+</a>
+<!-- Nav Item: Compliance Alerts (ACTIVE) -->
+<a class="flex items-center gap-3 px-3 py-2.5 font-sans text-sm font-medium tracking-wide uppercase transition-colors bg-[#1E3A5F] text-white border-l-4 border-sky-500 scale-95 active:scale-100 transition-transform" href="#">
+<span class="material-symbols-outlined text-xl">security</span>
+<span>Compliance Alerts</span>
+</a>
+<!-- Nav Item: Settings -->
+<a class="flex items-center gap-3 px-3 py-2.5 font-sans text-sm font-medium tracking-wide uppercase transition-colors text-slate-400 hover:text-white hover:bg-white/5 group" href="#">
+<span class="material-symbols-outlined text-xl">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto p-6 border-t border-white/5">
+<a class="flex items-center gap-3 px-3 py-2.5 font-sans text-sm font-medium tracking-wide uppercase transition-colors text-slate-400 hover:text-white hover:bg-white/5 group" href="#">
+<span class="material-symbols-outlined text-xl">account_circle</span>
+<span>Profile</span>
+</a>
+</div>
+</aside>
+<!-- Top App Bar -->
+<header class="fixed top-0 right-0 flex items-center justify-between px-8 z-40 bg-[#0F2340]/80 backdrop-blur-md docked top-0 right-0 h-16 w-[calc(100%-16rem)] border-b border-white/5">
+<div class="flex items-center gap-6 flex-1">
+<div class="relative w-full max-w-md group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
+<input class="w-full bg-surface-container-high border-none rounded-lg py-2 pl-10 pr-4 text-sm focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-slate-500" placeholder="Search regulatory database..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:text-primary transition-opacity duration-150 relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="h-8 w-px bg-outline-variant"></div>
+<div class="flex items-center gap-3 pl-2">
+<div class="text-right">
+<p class="text-xs font-bold text-white leading-tight">LexMind Intelligence</p>
+<p class="text-[10px] text-sky-400 font-medium">Compliance Dept.</p>
+</div>
+<img class="w-8 h-8 rounded-full border border-white/10 object-cover" data-alt="professional male portrait with confident expression wearing suit in bright corporate office setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMudLladOOpfQHKBTaTAH3rFXOJ6VDSwkqB5LcExIA7rWO9hppls-nG2guSywMtaYQtcZnR7sEH3uix6ZhCajFAmIkfWCbPw8gYXYQBDwKkxU_Tj3L4WHbyEyeGqr0jb37NZ7y3xHQXeSvue3cSM2pETImCymgrYla24qXMw_KPgXsmlbqKfHLzWQp7YP_rYVgBTX7gBftS19KfbmsRzc3rnt5kYO6UWEHCoa80Wq6hppDC6KItZlis0yCXfS70t8xsQrN1G3fke4"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-24 pb-12 px-8 min-h-screen bg-background">
+<!-- Header & Filters -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+<div class="space-y-1">
+<div class="flex items-center gap-2 text-sky-400 font-mono text-xs uppercase tracking-widest mb-1">
+<span class="w-2 h-2 rounded-full bg-error animate-pulse"></span>
+                    Live Regulatory Stream
+                </div>
+<h2 class="text-3xl font-semibold tracking-tight text-white">Compliance Alert Inbox</h2>
+<p class="text-on-surface-variant max-w-2xl">Monitoring global jurisdictions for changes affecting Hartwell &amp; Associates' active legal matters and corporate entities.</p>
+</div>
+<div class="flex flex-wrap items-center gap-3">
+<div class="flex items-center gap-2 px-3 py-2 bg-surface-container-low rounded-md border border-outline-variant">
+<span class="material-symbols-outlined text-sm text-on-surface-variant">filter_list</span>
+<select class="bg-transparent border-none text-xs font-bold text-on-surface-variant focus:ring-0 p-0 cursor-pointer">
+<option class="bg-[#0F2340]">SEVERITY: ALL</option>
+<option class="bg-[#0F2340]">CRITICAL ONLY</option>
+<option class="bg-[#0F2340]">HIGH ONLY</option>
+</select>
+</div>
+<div class="flex items-center gap-2 px-3 py-2 bg-surface-container-low rounded-md border border-outline-variant">
+<span class="material-symbols-outlined text-sm text-on-surface-variant">business_center</span>
+<select class="bg-transparent border-none text-xs font-bold text-on-surface-variant focus:ring-0 p-0 cursor-pointer">
+<option class="bg-[#0F2340]">ALL MATTERS</option>
+<option class="bg-[#0F2340]">SEC FILINGS</option>
+<option class="bg-[#0F2340]">EU GDPR AUDIT</option>
+</select>
+</div>
+<button class="flex items-center gap-2 px-4 py-2 bg-sky-600 text-white rounded-md text-xs font-bold hover:bg-sky-500 transition-colors">
+<span class="material-symbols-outlined text-sm">download</span>
+                    EXPORT REPORT
+                </button>
+</div>
+</div>
+<!-- Summary Metric Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+<div class="bg-surface-container-lowest p-5 rounded-xl editorial-shadow border-l-4 border-error/80 border-t border-white/5">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Critical</span>
+<span class="material-symbols-outlined text-error text-xl">report</span>
+</div>
+<div class="text-2xl font-bold text-white">04</div>
+<div class="text-[10px] text-error font-semibold mt-1">+2 since yesterday</div>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl editorial-shadow border-l-4 border-orange-500 border-t border-white/5">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">High</span>
+<span class="material-symbols-outlined text-orange-500 text-xl">warning</span>
+</div>
+<div class="text-2xl font-bold text-white">12</div>
+<div class="text-[10px] text-on-surface-variant font-medium mt-1">Requires triage</div>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl editorial-shadow border-l-4 border-sky-500 border-t border-white/5">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Medium</span>
+<span class="material-symbols-outlined text-sky-400 text-xl">info</span>
+</div>
+<div class="text-2xl font-bold text-white">28</div>
+<div class="text-[10px] text-on-surface-variant font-medium mt-1">Standard monitoring</div>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl editorial-shadow border-l-4 border-slate-500 border-t border-white/5">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Low</span>
+<span class="material-symbols-outlined text-slate-400 text-xl">inventory_2</span>
+</div>
+<div class="text-2xl font-bold text-white">143</div>
+<div class="text-[10px] text-on-surface-variant font-medium mt-1">Archived alerts</div>
+</div>
+</div>
+<!-- Alert Table -->
+<div class="bg-surface-container-lowest rounded-xl editorial-shadow overflow-hidden border border-white/5">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low text-[10px] font-bold text-slate-300 uppercase tracking-widest border-b border-white/5">
+<th class="px-6 py-4 w-32">Severity</th>
+<th class="px-6 py-4">Regulation &amp; Change</th>
+<th class="px-6 py-4">Affected Matters</th>
+<th class="px-6 py-4">Detected</th>
+<th class="px-6 py-4">Status</th>
+<th class="px-6 py-4 w-10"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+<!-- Expanded Row -->
+<tr class="group cursor-pointer transition-colors bg-white/5">
+<td class="px-6 py-6 align-top">
+<span class="px-2 py-1 bg-error text-[10px] font-bold text-white rounded-sm uppercase tracking-tighter">Critical</span>
+</td>
+<td class="px-6 py-6 align-top">
+<h4 class="font-bold text-white text-sm mb-1">SEC Rule 14a-8(i)(8) Amendment</h4>
+<p class="text-xs text-on-surface-variant leading-relaxed">Modification to shareholder proposal exclusion criteria regarding board elections.</p>
+</td>
+<td class="px-6 py-6 align-top">
+<div class="flex flex-wrap gap-1">
+<span class="px-2 py-0.5 bg-slate-800 border border-white/10 text-[9px] font-bold text-sky-400 rounded-sm">MAT-8802</span>
+<span class="px-2 py-0.5 bg-slate-800 border border-white/10 text-[9px] font-bold text-sky-400 rounded-sm">MAT-9121</span>
+</div>
+</td>
+<td class="px-6 py-6 align-top font-mono text-[10px] text-on-surface-variant">
+                            2024-05-24 | 09:41 AM
+                        </td>
+<td class="px-6 py-6 align-top">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+<span class="text-[10px] font-bold text-sky-400 uppercase">Unread</span>
+</div>
+</td>
+<td class="px-6 py-6 align-top text-right">
+<span class="material-symbols-outlined text-sky-400">keyboard_arrow_up</span>
+</td>
+</tr>
+<!-- Expanded Details Section -->
+<tr class="bg-white/5">
+<td class="px-6 pb-8" colspan="6">
+<div class="grid grid-cols-12 gap-8 pt-4 border-t border-white/10">
+<!-- What Changed Diff -->
+<div class="col-span-12 lg:col-span-5 space-y-4">
+<h5 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">difference</span> What Changed
+                                    </h5>
+<div class="p-4 bg-[#0a192f] rounded-lg font-document text-sm leading-relaxed border border-white/5 shadow-inner">
+<div class="bg-red-900/30 text-red-200 p-2 rounded-sm mb-2 line-through opacity-70 border-l-2 border-red-500">
+                                            (8) Relates to an election for membership on the company’s board of directors or analogous governing body;
+                                        </div>
+<div class="bg-green-900/30 text-green-200 p-2 rounded-sm font-bold border-l-4 border-green-500">
+                                            (8) Relates to an election for membership on the company’s board of directors or analogous governing body, <span class="underline decoration-green-500/50">provided that the proposal does not seek to include specific nominees in the company's proxy materials</span>;
+                                        </div>
+</div>
+</div>
+<!-- Why This Matters AI Summary -->
+<div class="col-span-12 lg:col-span-4 space-y-4">
+<h5 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-sky-400">smart_toy</span> Why This Matters
+                                    </h5>
+<div class="p-4 bg-gradient-to-br from-sky-900/20 to-transparent rounded-lg border border-sky-500/20">
+<p class="text-xs text-sky-100 font-medium leading-relaxed italic">
+                                            "This amendment shifts the burden of proof for proxy access. Existing bylaws for clients listed in MAT-8802 may now be non-compliant with federal disclosure standards, potentially triggering immediate board review requirements for the next proxy season."
+                                        </p>
+<div class="mt-4 flex flex-col gap-2">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Affected Clauses:</p>
+<a class="text-[10px] font-mono text-sky-400 hover:text-sky-300 flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[10px]">link</span> Bylaws § 4.2: Director Nominations
+                                            </a>
+<a class="text-[10px] font-mono text-sky-400 hover:text-sky-300 flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[10px]">link</span> Proxy Statement Template v4.1
+                                            </a>
+</div>
+</div>
+</div>
+<!-- Actions -->
+<div class="col-span-12 lg:col-span-3 flex flex-col gap-3 justify-start pt-6">
+<button class="w-full py-2.5 bg-sky-600 text-white rounded-md text-[11px] font-bold flex items-center justify-center gap-2 hover:bg-sky-500 transition-colors shadow-lg shadow-sky-900/20">
+<span class="material-symbols-outlined text-sm">assignment_add</span> CREATE REVIEW TASK
+                                    </button>
+<button class="w-full py-2.5 bg-[#162b45] text-white border border-white/10 rounded-md text-[11px] font-bold flex items-center justify-center gap-2 hover:bg-[#1E3A5F] transition-colors">
+<span class="material-symbols-outlined text-sm">mark_email_read</span> MARK AS READ
+                                    </button>
+<button class="w-full py-2.5 bg-transparent text-error border border-error/20 rounded-md text-[11px] font-bold flex items-center justify-center gap-2 hover:bg-error/5 transition-colors">
+<span class="material-symbols-outlined text-sm">block</span> DISMISS ALERT
+                                    </button>
+</div>
+</div>
+</td>
+</tr>
+<!-- Collapsed Row: High -->
+<tr class="group hover:bg-white/5 transition-colors cursor-pointer">
+<td class="px-6 py-6">
+<span class="px-2 py-1 bg-orange-500 text-[10px] font-bold text-white rounded-sm uppercase tracking-tighter">High</span>
+</td>
+<td class="px-6 py-6">
+<h4 class="font-bold text-white text-sm mb-1">EU AI Act - Final Text Adoption</h4>
+<p class="text-xs text-on-surface-variant">Implementation of risk-based tiering for general-purpose AI systems.</p>
+</td>
+<td class="px-6 py-6">
+<div class="flex flex-wrap gap-1">
+<span class="px-2 py-0.5 bg-slate-800 border border-white/10 text-[9px] font-bold text-sky-400 rounded-sm">CORP-DEV-01</span>
+</div>
+</td>
+<td class="px-6 py-6 font-mono text-[10px] text-on-surface-variant">
+                            2024-05-23 | 04:12 PM
+                        </td>
+<td class="px-6 py-6">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+<span class="text-[10px] font-bold text-slate-400 uppercase">Pending</span>
+</div>
+</td>
+<td class="px-6 py-6 text-right">
+<span class="material-symbols-outlined text-slate-500 group-hover:text-white transition-colors">keyboard_arrow_down</span>
+</td>
+</tr>
+<!-- Collapsed Row: Medium -->
+<tr class="group hover:bg-white/5 transition-colors cursor-pointer">
+<td class="px-6 py-6">
+<span class="px-2 py-1 bg-sky-600 text-[10px] font-bold text-white rounded-sm uppercase tracking-tighter">Medium</span>
+</td>
+<td class="px-6 py-6">
+<h4 class="font-bold text-white text-sm mb-1">Delaware Chancery Court: ESG Fiduciary Duty Ruling</h4>
+<p class="text-xs text-on-surface-variant">Judicial clarification on director oversight duties in climate risk disclosure.</p>
+</td>
+<td class="px-6 py-6">
+<div class="flex flex-wrap gap-1">
+<span class="px-2 py-0.5 bg-slate-800 border border-white/10 text-[9px] font-bold text-sky-400 rounded-sm">LIT-4491</span>
+</div>
+</td>
+<td class="px-6 py-6 font-mono text-[10px] text-on-surface-variant">
+                            2024-05-23 | 11:30 AM
+                        </td>
+<td class="px-6 py-6">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+<span class="text-[10px] font-bold text-slate-400 uppercase">Pending</span>
+</div>
+</td>
+<td class="px-6 py-6 text-right">
+<span class="material-symbols-outlined text-slate-500 group-hover:text-white transition-colors">keyboard_arrow_down</span>
+</td>
+</tr>
+<!-- Collapsed Row: High -->
+<tr class="group hover:bg-white/5 transition-colors cursor-pointer">
+<td class="px-6 py-6">
+<span class="px-2 py-1 bg-orange-500 text-[10px] font-bold text-white rounded-sm uppercase tracking-tighter">High</span>
+</td>
+<td class="px-6 py-6">
+<h4 class="font-bold text-white text-sm mb-1">FTC Non-Compete Ban Update</h4>
+<p class="text-xs text-on-surface-variant">Stay of enforcement order issued by TX Northern District.</p>
+</td>
+<td class="px-6 py-6">
+<div class="flex flex-wrap gap-1">
+<span class="px-2 py-0.5 bg-slate-800 border border-white/10 text-[9px] font-bold text-sky-400 rounded-sm">EMP-GLOBAL</span>
+</div>
+</td>
+<td class="px-6 py-6 font-mono text-[10px] text-on-surface-variant">
+                            2024-05-22 | 08:05 AM
+                        </td>
+<td class="px-6 py-6">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+<span class="text-[10px] font-bold text-slate-400 uppercase">Pending</span>
+</div>
+</td>
+<td class="px-6 py-6 text-right">
+<span class="material-symbols-outlined text-slate-500 group-hover:text-white transition-colors">keyboard_arrow_down</span>
+</td>
+</tr>
+</tbody>
+</table>
+<!-- Pagination-esque footer -->
+<div class="px-6 py-4 bg-surface-container-low/50 flex justify-between items-center border-t border-white/5">
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Showing 4 of 187 alerts</span>
+<div class="flex gap-2">
+<button class="px-4 py-1.5 bg-[#162b45] border border-white/10 rounded text-[10px] font-bold text-sky-400 hover:bg-[#1E3A5F] transition-colors">PREVIOUS</button>
+<button class="px-4 py-1.5 bg-[#162b45] border border-white/10 rounded text-[10px] font-bold text-sky-400 hover:bg-[#1E3A5F] transition-colors">NEXT</button>
+</div>
+</div>
+</div>
+<!-- Floating Contextual Insight (Bento Detail) -->
+<div class="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div class="lg:col-span-2 bg-[#1A1A2E] rounded-xl p-6 text-white editorial-shadow relative overflow-hidden group border border-white/5">
+<!-- Background Decorative Pattern -->
+<div class="absolute right-0 top-0 w-1/2 h-full opacity-10 pointer-events-none">
+<svg class="w-full h-full scale-150 translate-x-20" viewbox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+<path d="M47.5,-52.1C61.4,-44.6,72.4,-30.2,76.5,-14.2C80.6,1.8,77.7,19.3,68.9,33.5C60.1,47.7,45.4,58.6,29.3,64.7C13.2,70.9,-4.3,72.3,-21.8,68.1C-39.3,63.9,-56.9,54,-66.1,38.9C-75.3,23.8,-76.2,3.5,-71.4,-14.5C-66.5,-32.5,-55.9,-48.1,-41.6,-55.5C-27.4,-62.9,-9.5,-62.1,4.2,-67.2C17.9,-72.3,33.6,-59.6,47.5,-52.1Z" fill="white" transform="translate(100 100)"></path>
+</svg>
+</div>
+<div class="relative z-10">
+<h3 class="text-xl font-bold mb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-sky-400">psychology</span> Intelligence Forecast
+                    </h3>
+<p class="text-slate-300 text-sm leading-relaxed max-w-xl mb-6">
+                        LexMind's predictive engine identifies a 74% likelihood of further SEC amendments within the next 60 days regarding executive compensation clawbacks. Recommend proactive review of employment agreement templates.
+                    </p>
+<div class="flex items-center gap-4">
+<button class="px-4 py-2 bg-sky-500 text-white rounded-md text-xs font-bold hover:bg-sky-400 transition-colors shadow-lg shadow-sky-500/20">INITIATE STRATEGIC REVIEW</button>
+<div class="flex items-center gap-2">
+<span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Confidence Score:</span>
+<div class="flex gap-1">
+<div class="w-4 h-1.5 bg-sky-500 rounded-full"></div>
+<div class="w-4 h-1.5 bg-sky-500 rounded-full"></div>
+<div class="w-4 h-1.5 bg-sky-500 rounded-full"></div>
+<div class="w-4 h-1.5 bg-slate-700 rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-high rounded-xl p-6 flex flex-col justify-between border border-white/5 shadow-lg">
+<div>
+<h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Monitoring Health</h4>
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<span class="text-xs font-medium text-white">SEC (Federal)</span>
+<span class="text-[10px] font-bold text-green-400">ACTIVE</span>
+</div>
+<div class="w-full h-1.5 bg-[#0a192f] rounded-full overflow-hidden">
+<div class="h-full bg-green-500 w-[98%]"></div>
+</div>
+<div class="flex justify-between items-end">
+<span class="text-xs font-medium text-white">EU Commission</span>
+<span class="text-[10px] font-bold text-green-400">ACTIVE</span>
+</div>
+<div class="w-full h-1.5 bg-[#0a192f] rounded-full overflow-hidden">
+<div class="h-full bg-green-500 w-[95%]"></div>
+</div>
+<div class="flex justify-between items-end">
+<span class="text-xs font-medium text-white">UK Companies House</span>
+<span class="text-[10px] font-bold text-orange-400">DELAY (2m)</span>
+</div>
+<div class="w-full h-1.5 bg-[#0a192f] rounded-full overflow-hidden">
+<div class="h-full bg-orange-500 w-[70%]"></div>
+</div>
+</div>
+</div>
+<div class="pt-6 mt-6 border-t border-white/10 text-[10px] text-slate-500 italic">
+                    Last Global Sync: 14 seconds ago
+                </div>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,74 @@
+# Web framework
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+python-multipart==0.0.9
+websockets==13.0
+
+# Database
+sqlalchemy[asyncio]==2.0.35
+asyncpg==0.29.0
+psycopg2-binary==2.9.9
+psycopg[binary]==3.2.6
+alembic==1.13.3
+
+# Authentication
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-dotenv==1.0.1
+
+# Pydantic
+pydantic==2.9.2
+pydantic-settings==2.5.2
+
+# Azure OpenAI — bumped to >=1.52.0 to satisfy langchain-openai 0.2.x
+openai==1.58.1
+
+# LangGraph / LangChain
+langgraph==0.2.50
+langgraph-checkpoint-postgres==2.0.15
+langchain==0.3.7
+langchain-openai==0.2.7
+langchain-community==0.3.7
+
+# Vector store
+qdrant-client==1.11.3
+
+# Knowledge graph
+neo4j==5.25.0
+
+# Document parsing
+docling>=2.5.0
+pytesseract==0.3.13
+Pillow==10.4.0
+pdf2image==1.17.0
+
+# Text processing
+rank-bm25==0.2.2
+flashrank>=0.2.0
+tiktoken==0.8.0
+nltk==3.9.1
+
+# Celery / Redis
+celery==5.4.0
+redis==5.1.1
+kombu==5.3.7
+
+# Observability
+langfuse==2.57.0
+structlog==24.4.0
+
+# HTTP
+httpx==0.27.2
+aiohttp==3.10.10
+tenacity==8.5.0
+
+# Utilities
+python-slugify==8.0.4
+python-dateutil==2.9.0
+ujson==5.10.0
+
+# Testing
+pytest==8.3.3
+pytest-asyncio==0.24.0
+pytest-mock==3.14.0
+factory-boy==3.3.1
