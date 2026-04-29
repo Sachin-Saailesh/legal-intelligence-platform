@@ -56,6 +56,7 @@ async def get_review_queue(
                 "final_output": s.final_output,
                 "confidence_score": s.confidence_score,
                 "agent_route": s.agent_route,
+                "review_reason": s.review_reason,
                 "status": s.status,
                 "created_at": s.created_at.isoformat(),
             }

@@ -56,6 +56,12 @@ async def _run_orchestrator(
     finally:
         if queue:
             await queue.put(None)  # sentinel: stream done
+        
+        # Defer cleanup to allow reconnects to drain the queue
+        async def _cleanup():
+            await asyncio.sleep(60)
+            _stream_queues.pop(session_id, None)
+        asyncio.create_task(_cleanup())
 
 
 @router.post("")
@@ -123,6 +129,7 @@ async def list_sessions(
                 "confidence_score": s.confidence_score,
                 "status": s.status,
                 "agent_route": s.agent_route,
+                "review_reason": s.review_reason,
                 "created_at": s.created_at.isoformat(),
                 "source_chunks": [],
             }
@@ -162,7 +169,7 @@ async def stream_session(
     except WebSocketDisconnect:
         logger.info("ws_client_disconnected", session_id=session_id)
     finally:
-        _stream_queues.pop(session_id, None)
+        pass # DO NOT pop the queue here to allow reconnects
 
 
 @router.get("/{session_id}")
@@ -204,6 +211,7 @@ async def get_session(
             "confidence_score": session.confidence_score,
             "status": session.status,
             "agent_route": session.agent_route,
+            "review_reason": session.review_reason,
             "created_at": session.created_at.isoformat(),
             "source_chunks": [
                 {

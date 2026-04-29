@@ -12,6 +12,8 @@ import {
   type PipelineStage,
   type AgentId,
 } from "@/components/agent-pipeline-viz";
+import { TimelineView } from "@/components/timeline-view";
+import { DiscoveryTracker } from "@/components/discovery-tracker";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -20,6 +22,7 @@ interface CompletedResult {
   citations: SourceChunk[];
   confidence: number | null;
   requiresReview: boolean;
+  reviewReason?: string | null;
   agentRoute?: string;
   status: string;
 }
@@ -105,6 +108,46 @@ function CitationCard({ chunk, rank }: { chunk: SourceChunk; rank: number }) {
 }
 
 // ── Completed result panel (historical or just-finished) ─────────────────────
+function ReviewReasonBanner({ reason, confidence }: { reason?: string | null; confidence: number | null }) {
+  // Parse the reason string into structured parts for display
+  // Format: "agent_name confidence X.XX is below the Y.YY threshold for intent queries; synthesizer passed at Z.ZZ — review triggered by specialist agent"
+  const parts = reason ? reason.split("; ").filter(Boolean) : [];
+
+  return (
+    <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 px-5 py-4 space-y-3">
+      <div className="flex items-center gap-2">
+        <span className="material-symbols-outlined text-amber-400 text-lg">policy</span>
+        <span className="text-amber-400 text-sm font-bold">Attorney Review Required</span>
+        <Link href="/review" className="ml-auto text-[10px] text-sky-400 hover:text-sky-300 font-semibold uppercase tracking-wider">
+          Review Queue →
+        </Link>
+      </div>
+
+      {parts.length > 0 ? (
+        <div className="space-y-1.5">
+          {parts.map((part, i) => (
+            <div key={i} className="flex items-start gap-2 text-xs text-slate-300">
+              <span className={`material-symbols-outlined text-[13px] mt-0.5 flex-shrink-0 ${
+                part.includes("below") ? "text-amber-400" : "text-emerald-400"
+              }`}>
+                {part.includes("below") ? "warning" : "check_circle"}
+              </span>
+              <span className="leading-relaxed capitalize">{part}</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-xs text-slate-400">
+          This response requires attorney review before it can be used.
+          {confidence != null && confidence >= 0.85 && (
+            <span className="text-slate-500"> The synthesizer returned {(confidence * 100).toFixed(0)}% confidence — review was triggered by a specialist agent at an earlier pipeline stage.</span>
+          )}
+        </p>
+      )}
+    </div>
+  );
+}
+
 function CompletedResultPanel({ result }: { result: CompletedResult }) {
   return (
     <div className="space-y-3">
@@ -122,10 +165,7 @@ function CompletedResultPanel({ result }: { result: CompletedResult }) {
       </div>
 
       {result.requiresReview && (
-        <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-amber-400 text-xs font-medium">
-          ⚠ Confidence below threshold — pending attorney review. Go to{" "}
-          <Link href="/review" className="underline">Review Queue</Link>.
-        </div>
+        <ReviewReasonBanner reason={result.reviewReason} confidence={result.confidence} />
       )}
 
       {result.output && (
@@ -205,7 +245,6 @@ function LiveAgentStreamPanel({
       case "complete":
         setConfidence(frame.confidence);
         setRequiresReview(frame.requires_review);
-        // Go directly to complete — no guarding delay (guard already ran on backend)
         setStage(frame.requires_review ? "review" : "complete");
         setActiveAgents((prev) => {
           setDoneAgents((d) => Array.from(new Set([...d, ...prev])));
@@ -216,6 +255,7 @@ function LiveAgentStreamPanel({
           citations: citationAccRef.current,
           confidence: frame.confidence,
           requiresReview: frame.requires_review,
+          reviewReason: frame.review_reason ?? null,
           agentRoute,
           status: frame.requires_review ? "pending_review" : "complete",
         });
@@ -226,7 +266,7 @@ function LiveAgentStreamPanel({
     }
   }, [onComplete, agentRoute]);
 
-  const { isConnected, isDone } = useAgentStream(sessionId, { onFrame: handleFrame });
+  const { isConnected, isDone, close } = useAgentStream(sessionId, { onFrame: handleFrame });
   const fullText = chunks.join("");
   const isSynthesizing = ["synthesizing", "guarding", "complete", "review"].includes(stage);
 
@@ -255,7 +295,11 @@ function LiveAgentStreamPanel({
 
       {requiresReview && (
         <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-amber-400 text-xs font-medium">
-          ⚠ Confidence below threshold — pending attorney review. Go to{" "}
+          {confidence != null && confidence >= 0.80 ? (
+            <>⚠ A sub-agent flagged potential risks requiring review. The confidence is {(confidence * 100).toFixed(0)}%. Go to{" "}</>
+          ) : (
+            <>⚠ Confidence below threshold — pending attorney review. Go to{" "}</>
+          )}
           <Link href="/review" className="underline">Review Queue</Link>.
         </div>
       )}
@@ -283,12 +327,35 @@ function LiveAgentStreamPanel({
           {citations.map((c, i) => <CitationCard key={c.id || i} chunk={c} rank={i} />)}
         </div>
       )}
+
+      {/* Cancellation Button */}
+      {!isDone && (
+        <div className="flex justify-start">
+          <button
+            onClick={() => {
+              close();
+              onComplete?.({
+                output: chunkAccRef.current.join("") + "\n\n*[Analysis cancelled by user]*",
+                citations: citationAccRef.current,
+                confidence: confidence,
+                requiresReview: false,
+                agentRoute,
+                status: "cancelled",
+              });
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 mt-2 bg-slate-800 hover:bg-red-900/30 text-slate-400 hover:text-red-400 border border-slate-700 hover:border-red-900 rounded-md text-xs transition-colors"
+          >
+            <span className="material-symbols-outlined text-[14px]">stop_circle</span>
+            Stop Analysis
+          </button>
+        </div>
+      )}
     </div>
   );
 }
 
 // ── Main page ────────────────────────────────────────────────────────────────
-type Tab = "documents" | "query";
+type Tab = "documents" | "query" | "timeline" | "discovery";
 
 export default function MatterDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -298,6 +365,8 @@ export default function MatterDetailPage() {
 
   const [matter, setMatter] = useState<Matter | null>(null);
   const [tab, setTab] = useState<Tab>(initialTab);
+  const [closingMatter, setClosingMatter] = useState(false);
+  const [showCloseConfirm, setShowCloseConfirm] = useState(false);
   const [docs, setDocs] = useState<Document[]>([]);
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -327,6 +396,7 @@ export default function MatterDetailPage() {
               citations: s.source_chunks || [],
               confidence: s.confidence_score ?? null,
               requiresReview: s.status === "pending_review",
+              reviewReason: s.review_reason ?? null,
               agentRoute: s.agent_route,
               status: s.status,
             },
@@ -403,6 +473,16 @@ export default function MatterDetailPage() {
     );
   };
 
+  const toggleMatterStatus = async () => {
+    if (!matter) return;
+    const newStatus = matter.status === "active" ? "closed" : "active";
+    setClosingMatter(true);
+    const res = await api.matters.update(id, { status: newStatus });
+    if (!res.error) setMatter(res.data);
+    setClosingMatter(false);
+    setShowCloseConfirm(false);
+  };
+
   if (!matter) {
     return (
       <NavShell>
@@ -414,6 +494,36 @@ export default function MatterDetailPage() {
   return (
     <NavShell>
       <div className="p-8 space-y-6">
+        {/* Close confirmation modal */}
+        {showCloseConfirm && (
+          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+            <div className="bg-[#1A1A2E] border border-slate-700 rounded-xl p-6 w-full max-w-sm shadow-2xl space-y-4">
+              <div className="flex items-center gap-3">
+                <span className="material-symbols-outlined text-amber-400 text-2xl">lock</span>
+                <h3 className="font-bold text-white text-base">Close this matter?</h3>
+              </div>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Closing marks this matter as inactive. All documents, timeline events, and discovery items remain accessible but the matter will no longer appear in active counts.
+              </p>
+              <div className="flex gap-2 justify-end pt-1">
+                <button
+                  onClick={() => setShowCloseConfirm(false)}
+                  className="px-4 py-2 text-sm text-slate-400 hover:text-white border border-slate-700 rounded-md transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={toggleMatterStatus}
+                  disabled={closingMatter}
+                  className="px-4 py-2 text-sm bg-amber-600 hover:bg-amber-500 text-white rounded-md font-semibold transition-colors disabled:opacity-50"
+                >
+                  {closingMatter ? "Closing…" : "Close Matter"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Breadcrumb + title */}
         <div>
           <nav className="flex items-center gap-2 text-xs text-slate-500 uppercase tracking-widest mb-1">
@@ -421,13 +531,40 @@ export default function MatterDetailPage() {
             <span className="material-symbols-outlined text-[14px]">chevron_right</span>
             <span className="text-sky-400 font-bold truncate max-w-xs">{matter.title}</span>
           </nav>
-          <div className="flex items-start justify-between gap-4">
-            <h2 className="text-2xl font-bold text-white">{matter.title}</h2>
-            <span className={`px-2.5 py-1 text-xs font-bold uppercase tracking-wider rounded-md flex-shrink-0 ${
-              matter.status === "active" ? "bg-emerald-900/50 text-emerald-400 border border-emerald-700/30" : "bg-slate-700/50 text-slate-400 border border-slate-600/30"
-            }`}>
-              {matter.status}
-            </span>
+          <div className="flex items-start justify-between gap-4 flex-wrap">
+            <div className="flex items-center gap-3 flex-wrap">
+              <h2 className="text-2xl font-bold text-white">{matter.title}</h2>
+              <span className={`px-2.5 py-1 text-xs font-bold uppercase tracking-wider rounded-md flex-shrink-0 ${
+                matter.status === "active"
+                  ? "bg-emerald-900/50 text-emerald-400 border border-emerald-700/30"
+                  : "bg-slate-700/50 text-slate-400 border border-slate-600/30"
+              }`}>
+                {matter.status}
+              </span>
+              {matter.closed_at && (
+                <span className="text-xs text-slate-500 font-mono">
+                  Closed {new Date(matter.closed_at).toLocaleDateString()}
+                </span>
+              )}
+            </div>
+            {matter.status === "active" ? (
+              <button
+                onClick={() => setShowCloseConfirm(true)}
+                className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-slate-300 border border-slate-600 rounded-md hover:border-amber-500/50 hover:text-amber-400 transition-colors flex-shrink-0"
+              >
+                <span className="material-symbols-outlined text-base">lock</span>
+                Close Matter
+              </button>
+            ) : (
+              <button
+                onClick={toggleMatterStatus}
+                disabled={closingMatter}
+                className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-emerald-400 border border-emerald-700/40 rounded-md hover:border-emerald-500 hover:bg-emerald-900/20 transition-colors flex-shrink-0 disabled:opacity-50"
+              >
+                <span className="material-symbols-outlined text-base">lock_open</span>
+                {closingMatter ? "Reopening…" : "Reopen Matter"}
+              </button>
+            )}
           </div>
           <p className="text-sm text-slate-400 mt-1 font-mono">
             {matter.matter_type} {matter.jurisdiction ? `· ${matter.jurisdiction}` : ""} {matter.practice_area ? `· ${matter.practice_area}` : ""}
@@ -435,20 +572,35 @@ export default function MatterDetailPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-6 border-b border-white/10">
-          {(["documents", "query"] as Tab[]).map((t) => (
-            <button
-              key={t}
-              onClick={() => setTab(t)}
-              className={`pb-3 text-sm font-semibold transition-colors capitalize ${
-                tab === t
-                  ? "text-sky-400 border-b-2 border-sky-400"
-                  : "text-slate-400 hover:text-white border-b-2 border-transparent"
-              }`}
-            >
-              {t === "documents" ? "Documents" : "Query Intelligence"}
-            </button>
-          ))}
+        <div className="flex gap-6 border-b border-white/10 overflow-x-auto">
+          {(["documents", "timeline", "discovery", "query"] as Tab[]).map((t) => {
+            const labels: Record<Tab, string> = {
+              documents: "Documents",
+              timeline: "Timeline",
+              discovery: "Discovery",
+              query: "Query Intelligence",
+            };
+            const icons: Record<Tab, string> = {
+              documents: "description",
+              timeline: "timeline",
+              discovery: "folder_open",
+              query: "psychology",
+            };
+            return (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                className={`pb-3 flex items-center gap-1.5 text-sm font-semibold transition-colors whitespace-nowrap flex-shrink-0 ${
+                  tab === t
+                    ? "text-sky-400 border-b-2 border-sky-400"
+                    : "text-slate-400 hover:text-white border-b-2 border-transparent"
+                }`}
+              >
+                <span className="material-symbols-outlined text-[16px]">{icons[t]}</span>
+                {labels[t]}
+              </button>
+            );
+          })}
         </div>
 
         {/* Documents Tab */}
@@ -571,15 +723,15 @@ export default function MatterDetailPage() {
                   <span className="text-[10px] text-slate-600 font-mono">⌘ + Enter to submit</span>
                   <button
                     onClick={handleQuery}
-                    disabled={submitting || !query.trim()}
+                    disabled={submitting || !query.trim() || conversation.some(c => !c.result)}
                     className="flex items-center gap-2 px-5 py-2 bg-gradient-to-br from-sky-500 to-blue-600 text-white text-xs font-bold rounded-md disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 active:scale-95 transition-all"
                   >
-                    {submitting ? (
+                    {submitting || conversation.some(c => !c.result) ? (
                       <span className="animate-spin material-symbols-outlined text-base">refresh</span>
                     ) : (
                       <span className="material-symbols-outlined text-base">send</span>
                     )}
-                    {submitting ? "Starting…" : "Run Analysis"}
+                    {submitting || conversation.some(c => !c.result) ? "Analysis Running..." : "Run Analysis"}
                   </button>
                 </div>
               </div>
@@ -590,6 +742,32 @@ export default function MatterDetailPage() {
                 </div>
               )}
             </div>
+          </div>
+        )}
+
+        {/* Timeline Tab */}
+        {tab === "timeline" && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between mb-1">
+              <div>
+                <h3 className="text-lg font-bold text-white">Case Timeline</h3>
+                <p className="text-xs text-slate-500 mt-0.5">Chronological record of filings, hearings, deadlines, and key events</p>
+              </div>
+            </div>
+            <TimelineView matterId={id} />
+          </div>
+        )}
+
+        {/* Discovery Tab */}
+        {tab === "discovery" && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between mb-1">
+              <div>
+                <h3 className="text-lg font-bold text-white">Discovery Management</h3>
+                <p className="text-xs text-slate-500 mt-0.5">Track interrogatories, document requests, depositions, and discovery deadlines</p>
+              </div>
+            </div>
+            <DiscoveryTracker matterId={id} />
           </div>
         )}
       </div>

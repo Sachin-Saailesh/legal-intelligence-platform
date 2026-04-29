@@ -144,7 +144,9 @@ function StageNode({
         <span className={`material-symbols-outlined ${small ? "text-base" : "text-xl"}`}>
           {state === "done" ? "check_circle" : icon}
         </span>
-        {state === "active" && <PulseDot />}
+        {state === "active" && (
+          <span className="material-symbols-outlined text-xs animate-spin">refresh</span>
+        )}
       </div>
       <span className="font-bold tracking-wide uppercase text-center leading-tight px-1">
         {label}
@@ -222,19 +224,7 @@ function AgentCard({ info, status }: { info: AgentInfo; status: AgentStatus }) {
         </span>
         {isActive && (
           <span className="ml-auto">
-            <PulseDot
-              color={
-                info.id === "case_researcher"
-                  ? "bg-violet-500"
-                  : info.id === "compliance_monitor"
-                  ? "bg-emerald-500"
-                  : info.id === "legal_drafter"
-                  ? "bg-amber-500"
-                  : info.id === "litigation_risk"
-                  ? "bg-red-500"
-                  : "bg-sky-500"
-              }
-            />
+            <span className={`material-symbols-outlined text-[14px] animate-spin ${info.activeColor}`}>refresh</span>
           </span>
         )}
         {isDone && (
@@ -312,7 +302,7 @@ function GuardBadge({
         <span className="material-symbols-outlined text-lg">
           {state === "passed" ? "verified" : state === "failed" ? "gpp_bad" : "security"}
         </span>
-        {state === "active" && <PulseDot color="bg-amber-500" />}
+        {state === "active" && <span className="material-symbols-outlined text-[14px] animate-spin text-amber-500">refresh</span>}
       </div>
       <span className="text-[10px] font-bold uppercase tracking-wide">Hallucination Guard</span>
       {confidence != null && (

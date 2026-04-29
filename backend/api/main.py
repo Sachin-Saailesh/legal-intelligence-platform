@@ -116,20 +116,30 @@ async def health():
 
 @app.get("/api/dashboard/stats")
 async def dashboard_stats():
+    from datetime import datetime, timezone, timedelta
     from db.session import AsyncSessionFactory
-    from db.models import Matter, AgentSession, ComplianceAlert, AlertStatus, SessionStatus, User
+    from db.models import (
+        Matter, AgentSession, ComplianceAlert, AlertStatus, SessionStatus,
+        User, TimelineEvent, DiscoveryItem,
+    )
     from sqlalchemy import select, func
 
     async with AsyncSessionFactory() as db:
         user_result = await db.execute(select(User).limit(1))
         user = user_result.scalar_one_or_none()
         if not user:
-            return {"data": {"open_matters": 0, "pending_reviews": 0, "unread_alerts": 0, "recent_sessions": []}, "error": None}
+            return {
+                "data": {
+                    "open_matters": 0, "pending_reviews": 0, "unread_alerts": 0,
+                    "overdue_timeline": 0, "critical_deadlines": 0,
+                    "recent_sessions": [], "upcoming_events": [], "critical_discovery": [],
+                },
+                "error": None,
+            }
 
         open_matters = await db.scalar(
             select(func.count(Matter.id)).where(
-                Matter.firm_id == user.firm_id,
-                Matter.status == "active",
+                Matter.firm_id == user.firm_id, Matter.status == "active",
             )
         )
         pending_reviews = await db.scalar(
@@ -137,9 +147,13 @@ async def dashboard_stats():
                 AgentSession.status == SessionStatus.pending_review
             )
         )
-        # Get matter IDs for firm
-        firm_matters = await db.execute(select(Matter.id).where(Matter.firm_id == user.firm_id))
-        firm_matter_ids = [row[0] for row in firm_matters.fetchall()]
+
+        firm_matters_result = await db.execute(
+            select(Matter.id, Matter.title).where(Matter.firm_id == user.firm_id)
+        )
+        firm_matter_rows = firm_matters_result.fetchall()
+        firm_matter_ids = [r[0] for r in firm_matter_rows]
+        matter_titles = {r[0]: r[1] for r in firm_matter_rows}
 
         unread_alerts = await db.scalar(
             select(func.count(ComplianceAlert.id)).where(
@@ -156,11 +170,82 @@ async def dashboard_stats():
         )
         sessions = recent_sessions.scalars().all()
 
+        now = datetime.now(timezone.utc)
+        week_ahead = now + timedelta(days=7)
+
+        # Overdue timeline events count
+        overdue_timeline = 0
+        upcoming_events_list = []
+        if firm_matter_ids:
+            overdue_timeline = await db.scalar(
+                select(func.count(TimelineEvent.id)).where(
+                    TimelineEvent.matter_id.in_(firm_matter_ids),
+                    TimelineEvent.status == "overdue",
+                )
+            ) or 0
+
+            upcoming_result = await db.execute(
+                select(TimelineEvent)
+                .where(
+                    TimelineEvent.matter_id.in_(firm_matter_ids),
+                    TimelineEvent.status == "upcoming",
+                    TimelineEvent.event_date >= now,
+                )
+                .order_by(TimelineEvent.event_date.asc())
+                .limit(5)
+            )
+            for ev in upcoming_result.scalars().all():
+                upcoming_events_list.append({
+                    "id": str(ev.id),
+                    "matter_id": str(ev.matter_id),
+                    "matter_title": matter_titles.get(ev.matter_id, ""),
+                    "event_type": ev.event_type,
+                    "title": ev.title,
+                    "event_date": ev.event_date.isoformat(),
+                    "status": ev.status,
+                })
+
+        # Critical discovery deadlines (next 7 days or overdue)
+        critical_deadlines_count = 0
+        critical_discovery_list = []
+        if firm_matter_ids:
+            critical_deadlines_count = await db.scalar(
+                select(func.count(DiscoveryItem.id)).where(
+                    DiscoveryItem.matter_id.in_(firm_matter_ids),
+                    DiscoveryItem.status.in_(["pending", "in_progress", "overdue"]),
+                    DiscoveryItem.deadline <= week_ahead,
+                )
+            ) or 0
+
+            deadline_result = await db.execute(
+                select(DiscoveryItem)
+                .where(
+                    DiscoveryItem.matter_id.in_(firm_matter_ids),
+                    DiscoveryItem.status.in_(["pending", "in_progress", "overdue"]),
+                    DiscoveryItem.deadline.isnot(None),
+                )
+                .order_by(DiscoveryItem.deadline.asc())
+                .limit(5)
+            )
+            for item in deadline_result.scalars().all():
+                critical_discovery_list.append({
+                    "id": str(item.id),
+                    "matter_id": str(item.matter_id),
+                    "matter_title": matter_titles.get(item.matter_id, ""),
+                    "title": item.title,
+                    "item_type": item.item_type,
+                    "deadline": item.deadline.isoformat() if item.deadline else None,
+                    "priority": item.priority,
+                    "status": item.status,
+                })
+
     return {
         "data": {
             "open_matters": open_matters or 0,
             "pending_reviews": pending_reviews or 0,
             "unread_alerts": unread_alerts or 0,
+            "overdue_timeline": overdue_timeline,
+            "critical_deadlines": critical_deadlines_count,
             "recent_sessions": [
                 {
                     "id": str(s.id),
@@ -171,6 +256,8 @@ async def dashboard_stats():
                 }
                 for s in sessions
             ],
+            "upcoming_events": upcoming_events_list,
+            "critical_discovery": critical_discovery_list,
         },
         "error": None,
     }
@@ -178,10 +265,13 @@ async def dashboard_stats():
 
 # ── Register routers ──────────────────────────────────────────────────────────
 
-from api.routers import matters, documents, queries, review, alerts
+from api.routers import matters, documents, queries, review, alerts, timeline, discovery, global_views
 
 app.include_router(matters.router)
 app.include_router(documents.router)
 app.include_router(queries.router)
 app.include_router(review.router)
 app.include_router(alerts.router)
+app.include_router(timeline.router)
+app.include_router(discovery.router)
+app.include_router(global_views.router)

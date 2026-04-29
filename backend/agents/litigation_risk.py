@@ -70,14 +70,14 @@ async def run_litigation_risk(
 
     logger.info("litigation_risk_start", matter_id=matter_id, query_preview=query[:80])
 
-    # Retrieve from matter corpus (case facts)
-    matter_chunks = await retriever.retrieve(query, matter_id, top_k=100, final_top_k=20)
-
-    # Retrieve from global case law collection
-    caselaw_chunks = await retriever.retrieve(query, "caselaw", top_k=100, final_top_k=20)
+    # Retrieve from matter and case law concurrently
+    matter_chunks, caselaw_chunks = await asyncio.gather(
+        retriever.retrieve(query, matter_id, top_k=100, final_top_k=20),
+        retriever.retrieve(query, "caselaw", top_k=100, final_top_k=20)
+    )
 
     all_chunks = matter_chunks + caselaw_chunks
-    ranked = reranker.rerank(query, all_chunks, top_k=10)
+    ranked = await asyncio.to_thread(reranker.rerank, query, all_chunks, top_k=10)
 
     top_score = ranked[0].rerank_score if ranked else 0.0
     logger.info(

@@ -24,9 +24,14 @@ services:
       PYTHONUNBUFFERED: "1"
 
   frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile.dev
     volumes:
       - ../frontend:/app
       - /app/node_modules
       - /app/.next
+    command: npm run dev
     environment:
       NODE_ENV: development
+      WATCHPACK_POLLING: "true"

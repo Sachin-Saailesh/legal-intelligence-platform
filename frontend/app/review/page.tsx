@@ -6,6 +6,39 @@ import { api, AgentSession } from "@/lib/api";
 import { NavShell } from "@/components/nav-shell";
 import ReactMarkdown from "react-markdown";
 
+function ReviewReasonBanner({ reason, confidence }: { reason?: string | null; confidence: number | null }) {
+  const parts = reason ? reason.split("; ").filter(Boolean) : [];
+  return (
+    <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-3 space-y-2">
+      <div className="flex items-center gap-2">
+        <span className="material-symbols-outlined text-amber-400 text-base">policy</span>
+        <span className="text-amber-400 text-xs font-bold">Why Review Was Triggered</span>
+      </div>
+      {parts.length > 0 ? (
+        <div className="space-y-1">
+          {parts.map((part, i) => (
+            <div key={i} className="flex items-start gap-2 text-xs text-slate-300">
+              <span className={`material-symbols-outlined text-[12px] mt-0.5 flex-shrink-0 ${
+                part.includes("below") ? "text-amber-400" : "text-emerald-400"
+              }`}>
+                {part.includes("below") ? "warning" : "check_circle"}
+              </span>
+              <span className="leading-relaxed capitalize">{part}</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-xs text-slate-400">
+          Flagged for attorney review.
+          {confidence != null && confidence >= 0.85 && (
+            <span className="text-slate-500"> Synthesizer returned {(confidence * 100).toFixed(0)}% — review triggered by a specialist agent.</span>
+          )}
+        </p>
+      )}
+    </div>
+  );
+}
+
 function ConfidenceBars({ score }: { score: number | null }) {
   const filled = score == null ? 0 : score >= 0.9 ? 4 : score >= 0.7 ? 3 : score >= 0.5 ? 2 : 1;
   return (
@@ -143,6 +176,11 @@ export default function ReviewPage() {
                   {/* Expanded */}
                   {isExpanded && (
                     <div className="border-t border-slate-700/40 p-5 space-y-5 bg-[#0A192F]/20">
+                      {/* Review reason */}
+                      {s.review_reason && (
+                        <ReviewReasonBanner reason={s.review_reason} confidence={s.confidence_score ?? null} />
+                      )}
+
                       {/* Agent output */}
                       <div>
                         <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">

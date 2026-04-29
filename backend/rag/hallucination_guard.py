@@ -91,7 +91,7 @@ class HallucinationGuard:
             None
             if passed
             else (
-                f"Confidence {confidence:.2f} is below threshold {self._threshold:.2f}. "
+                f"Confidence {confidence*100:.0f}% is below threshold {self._threshold*100:.0f}%. "
                 f"Reasoning: {reasoning}"
             )
         )

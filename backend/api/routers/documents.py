@@ -1,4 +1,5 @@
-import os
+import json
+import re
 import uuid
 from pathlib import Path
 from typing import Annotated
@@ -10,11 +11,99 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api.dependencies import get_current_user
 from core.config import settings
 from core.logging import get_logger
-from db.models import Document, IngestionStatus, Matter, User
+from db.models import Document, IngestionStatus, Matter, TimelineEvent, User
 from db.session import get_db, AsyncSessionFactory
 
 router = APIRouter(prefix="/api/matters", tags=["documents"])
 logger = get_logger(__name__)
+
+
+def _parse_json_safe(text: str) -> dict:
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        match = re.search(r"\{.*\}", text, re.DOTALL)
+        if match:
+            try:
+                return json.loads(match.group())
+            except json.JSONDecodeError:
+                pass
+    return {}
+
+
+async def _auto_extract_timeline(document_id: str, matter_id: str) -> None:
+    """After ingestion, use GPT-4o to extract timeline events directly from document text."""
+    from datetime import datetime
+    from rag.ingestion import _parse_document
+    from rag.embeddings import llm_client
+
+    async with AsyncSessionFactory() as db:
+        doc_result = await db.execute(
+            select(Document).where(Document.id == uuid.UUID(document_id))
+        )
+        document = doc_result.scalar_one_or_none()
+        if not document:
+            return
+
+        try:
+            pages = await _parse_document(document.file_path)
+        except Exception as exc:
+            logger.warning("auto_extract_parse_failed", document_id=document_id, error=str(exc))
+            return
+
+        full_text = "\n\n".join(p["text"] for p in pages)[:12000]
+        if not full_text.strip():
+            return
+
+        prompt = (
+            "Extract all significant legal timeline events from the following document. "
+            "Return ONLY a valid JSON object:\n"
+            '{"events": [{"event_type": "<filing|hearing|deposition|deadline|discovery|settlement|motion|order|other>", '
+            '"title": "<concise title>", "description": "<brief details>", "event_date": "<YYYY-MM-DD>", '
+            '"document_ref": "<short source reference or null>"}]}\n\n'
+            "Only include events with a clearly identifiable date. Skip events without a specific date.\n\n"
+            f"DOCUMENT:\n{full_text}"
+        )
+
+        try:
+            raw = await llm_client.complete(
+                system=(
+                    "You are a precise legal timeline extraction assistant. "
+                    "Extract only events with clear dates. Return valid JSON only."
+                ),
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0,
+                max_tokens=2048,
+                trace_name="auto_timeline_extract",
+            )
+            data = _parse_json_safe(raw)
+            events = data.get("events", [])
+        except Exception as exc:
+            logger.warning("auto_extract_llm_failed", document_id=document_id, error=str(exc))
+            return
+
+        saved = 0
+        matter_uuid = uuid.UUID(matter_id)
+        for ev in events:
+            try:
+                event = TimelineEvent(
+                    matter_id=matter_uuid,
+                    event_type=ev.get("event_type", "other"),
+                    title=ev.get("title", "Untitled"),
+                    description=ev.get("description"),
+                    event_date=datetime.fromisoformat(ev["event_date"]),
+                    status="upcoming",
+                    source="ai_extracted",
+                    document_ref=ev.get("document_ref") or document.filename,
+                )
+                db.add(event)
+                saved += 1
+            except (KeyError, ValueError):
+                continue
+
+        if saved:
+            await db.commit()
+            logger.info("auto_extract_saved", document_id=document_id, event_count=saved)
 
 
 async def _run_ingestion(document_id: str) -> None:
@@ -41,6 +130,9 @@ async def _run_ingestion(document_id: str) -> None:
             neo4j_client=neo4j,
         )
         await pipeline.ingest(document, db)
+
+    # Chain timeline extraction after ingestion completes
+    await _auto_extract_timeline(document_id, str(document.matter_id))
 
 
 @router.post("/{matter_id}/documents", status_code=status.HTTP_201_CREATED)

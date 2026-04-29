@@ -9,7 +9,7 @@ export type WsFrame =
   | { type: "intent_classified"; intent: string }
   | { type: "chunk"; text: string }
   | { type: "citation"; chunk: Record<string, unknown> }
-  | { type: "complete"; confidence: number; requires_review: boolean }
+  | { type: "complete"; confidence: number; requires_review: boolean; review_reason?: string | null }
   | { type: "error"; message: string }
   | { type: "ping" };
 

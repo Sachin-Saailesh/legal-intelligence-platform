@@ -68,18 +68,15 @@ async def run_case_researcher(
         jurisdiction=jurisdiction,
     )
 
-    # Search both matter corpus and global case law collection
-    matter_chunks = await retriever.retrieve(
-        query, matter_id, top_k=100, jurisdiction=jurisdiction, final_top_k=20
-    )
-
-    # Also search global case law collection (matter_id="caselaw")
-    caselaw_chunks = await retriever.retrieve(
-        query, "caselaw", top_k=100, jurisdiction=jurisdiction, final_top_k=20
+    # Search both matter corpus and global case law collection concurrently
+    import asyncio
+    matter_chunks, caselaw_chunks = await asyncio.gather(
+        retriever.retrieve(query, matter_id, top_k=100, jurisdiction=jurisdiction, final_top_k=20),
+        retriever.retrieve(query, "caselaw", top_k=100, jurisdiction=jurisdiction, final_top_k=20)
     )
 
     all_chunks = matter_chunks + caselaw_chunks
-    ranked = reranker.rerank(query, all_chunks, top_k=10)
+    ranked = await asyncio.to_thread(reranker.rerank, query, all_chunks, top_k=10)
 
     top_score = ranked[0].rerank_score if ranked else 0.0
     logger.info(

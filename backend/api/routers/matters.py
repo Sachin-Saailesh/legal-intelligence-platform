@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime, timezone
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -40,6 +41,7 @@ def _matter_response(m: Matter) -> dict:
         "practice_area": m.practice_area,
         "industry": m.industry,
         "created_at": m.created_at.isoformat(),
+        "closed_at": m.closed_at.isoformat() if m.closed_at else None,
     }
 
 
@@ -114,6 +116,10 @@ async def update_matter(
 
     updates = body.model_dump(exclude_none=True)
     if updates:
+        if updates.get("status") == "closed" and matter.status != "closed":
+            updates["closed_at"] = datetime.now(timezone.utc)
+        elif updates.get("status") == "active" and matter.status == "closed":
+            updates["closed_at"] = None
         await db.execute(
             update(Matter).where(Matter.id == uuid.UUID(matter_id)).values(**updates)
         )

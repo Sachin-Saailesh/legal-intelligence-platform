@@ -81,6 +81,51 @@ class CorrectionType(str, PyEnum):
     completeness = "completeness"
 
 
+class EventType(str, PyEnum):
+    filing = "filing"
+    hearing = "hearing"
+    deposition = "deposition"
+    deadline = "deadline"
+    discovery = "discovery"
+    settlement = "settlement"
+    motion = "motion"
+    order = "order"
+    other = "other"
+
+
+class EventStatus(str, PyEnum):
+    upcoming = "upcoming"
+    completed = "completed"
+    overdue = "overdue"
+    cancelled = "cancelled"
+
+
+class DiscoveryType(str, PyEnum):
+    interrogatory = "interrogatory"
+    document_request = "document_request"
+    deposition = "deposition"
+    admission = "admission"
+    subpoena = "subpoena"
+    expert_disclosure = "expert_disclosure"
+    other = "other"
+
+
+class DiscoveryItemStatus(str, PyEnum):
+    pending = "pending"
+    in_progress = "in_progress"
+    responded = "responded"
+    objected = "objected"
+    overdue = "overdue"
+    completed = "completed"
+
+
+class Priority(str, PyEnum):
+    low = "low"
+    medium = "medium"
+    high = "high"
+    critical = "critical"
+
+
 # ── ORM Models ─────────────────────────────────────────────────────────────────
 
 class Firm(Base):
@@ -135,10 +180,14 @@ class Matter(Base):
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
 
+    closed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
     firm: Mapped["Firm"] = relationship("Firm", back_populates="matters")
     documents: Mapped[list["Document"]] = relationship("Document", back_populates="matter")
     sessions: Mapped[list["AgentSession"]] = relationship("AgentSession", back_populates="matter")
     alerts: Mapped[list["ComplianceAlert"]] = relationship("ComplianceAlert", back_populates="matter")
+    timeline_events: Mapped[list["TimelineEvent"]] = relationship("TimelineEvent", back_populates="matter")
+    discovery_items: Mapped[list["DiscoveryItem"]] = relationship("DiscoveryItem", back_populates="matter")
 
 
 class Document(Base):
@@ -177,6 +226,7 @@ class AgentSession(Base):
     agent_route: Mapped[str | None] = mapped_column(Text, nullable=True)
     final_output: Mapped[str | None] = mapped_column(Text, nullable=True)
     confidence_score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    review_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
     status: Mapped[str] = mapped_column(
         String(50), default=SessionStatus.processing, nullable=False
     )
@@ -249,3 +299,49 @@ class AttorneyCorrection(Base):
     )
 
     session: Mapped["AgentSession"] = relationship("AgentSession", back_populates="corrections")
+
+
+class TimelineEvent(Base):
+    __tablename__ = "timeline_events"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    matter_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("matters.id"), nullable=False, index=True
+    )
+    event_type: Mapped[str] = mapped_column(String(50), nullable=False, default=EventType.other)
+    title: Mapped[str] = mapped_column(String(500), nullable=False)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    event_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    status: Mapped[str] = mapped_column(String(50), nullable=False, default=EventStatus.upcoming)
+    source: Mapped[str] = mapped_column(String(50), nullable=False, default="manual")
+    document_ref: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+    matter: Mapped["Matter"] = relationship("Matter", back_populates="timeline_events")
+
+
+class DiscoveryItem(Base):
+    __tablename__ = "discovery_items"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    matter_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("matters.id"), nullable=False, index=True
+    )
+    item_type: Mapped[str] = mapped_column(String(50), nullable=False, default=DiscoveryType.other)
+    title: Mapped[str] = mapped_column(String(500), nullable=False)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    deadline: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    status: Mapped[str] = mapped_column(String(50), nullable=False, default=DiscoveryItemStatus.pending)
+    priority: Mapped[str] = mapped_column(String(50), nullable=False, default=Priority.medium)
+    assigned_to: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
+    )
+
+    matter: Mapped["Matter"] = relationship("Matter", back_populates="discovery_items")

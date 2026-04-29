@@ -52,7 +52,7 @@ async def run_contract_analyst(
 
     # Retrieve and rerank
     chunks = await retriever.retrieve(query, matter_id, top_k=100, final_top_k=30)
-    ranked = reranker.rerank(query, chunks, top_k=10)
+    ranked = await asyncio.to_thread(reranker.rerank, query, chunks, top_k=15)
 
     top_score = ranked[0].rerank_score if ranked else 0.0
     logger.info(

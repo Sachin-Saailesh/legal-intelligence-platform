@@ -133,8 +133,9 @@ async def run_compliance_monitor(
     logger.info("compliance_monitor_start", matter_id=matter_id)
 
     # Retrieve context from matter corpus
+    import asyncio
     chunks = await retriever.retrieve(query, matter_id, top_k=50, final_top_k=10)
-    ranked = reranker.rerank(query, chunks, top_k=5)
+    ranked = await asyncio.to_thread(reranker.rerank, query, chunks, top_k=5)
 
     # Fetch live regulatory updates
     practice_areas = state.get("metadata", {}).get("practice_areas", ["general"])

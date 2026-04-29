@@ -77,6 +77,48 @@ export const api = {
         body: JSON.stringify({ status }),
       }),
   },
+
+  timeline: {
+    listAll: (params?: { matter_id?: string; event_type?: string; status?: string }) => {
+      const qs = new URLSearchParams(params as Record<string, string> || {}).toString();
+      return request<TimelineEventWithMatter[]>(`/api/timeline${qs ? `?${qs}` : ""}`);
+    },
+    list: (matter_id: string, params?: { event_type?: string; status?: string }) => {
+      const qs = new URLSearchParams(params as Record<string, string> || {}).toString();
+      return request<TimelineEvent[]>(`/api/matters/${matter_id}/timeline${qs ? `?${qs}` : ""}`);
+    },
+    create: (matter_id: string, body: Omit<TimelineEvent, "id" | "matter_id" | "created_at" | "source">) =>
+      request<TimelineEvent>(`/api/matters/${matter_id}/timeline`, { method: "POST", body: JSON.stringify(body) }),
+    update: (matter_id: string, event_id: string, body: Partial<TimelineEvent>) =>
+      request<TimelineEvent>(`/api/matters/${matter_id}/timeline/${event_id}`, { method: "PATCH", body: JSON.stringify(body) }),
+    delete: (matter_id: string, event_id: string) =>
+      request<{ deleted: string }>(`/api/matters/${matter_id}/timeline/${event_id}`, { method: "DELETE" }),
+    extract: (matter_id: string) =>
+      request<{ events: ExtractedTimelineEvent[]; message: string | null }>(`/api/matters/${matter_id}/timeline/extract`, { method: "POST" }),
+    bulkSave: (matter_id: string, events: ExtractedTimelineEvent[]) =>
+      request<{ saved: number }>(`/api/matters/${matter_id}/timeline/bulk-save`, { method: "POST", body: JSON.stringify({ events }) }),
+  },
+
+  discovery: {
+    listAll: (params?: { matter_id?: string; item_type?: string; status?: string; priority?: string }) => {
+      const qs = new URLSearchParams(params as Record<string, string> || {}).toString();
+      return request<DiscoveryItemWithMatter[]>(`/api/discovery${qs ? `?${qs}` : ""}`);
+    },
+    globalStats: () => request<DiscoveryStats>("/api/discovery/global-stats"),
+    list: (matter_id: string, params?: { item_type?: string; status?: string; priority?: string }) => {
+      const qs = new URLSearchParams(params as Record<string, string> || {}).toString();
+      return request<DiscoveryItem[]>(`/api/matters/${matter_id}/discovery${qs ? `?${qs}` : ""}`);
+    },
+    stats: (matter_id: string) => request<DiscoveryStats>(`/api/matters/${matter_id}/discovery/stats`),
+    create: (matter_id: string, body: Omit<DiscoveryItem, "id" | "matter_id" | "created_at" | "updated_at">) =>
+      request<DiscoveryItem>(`/api/matters/${matter_id}/discovery`, { method: "POST", body: JSON.stringify(body) }),
+    update: (matter_id: string, item_id: string, body: Partial<DiscoveryItem>) =>
+      request<DiscoveryItem>(`/api/matters/${matter_id}/discovery/${item_id}`, { method: "PATCH", body: JSON.stringify(body) }),
+    delete: (matter_id: string, item_id: string) =>
+      request<{ deleted: string }>(`/api/matters/${matter_id}/discovery/${item_id}`, { method: "DELETE" }),
+    analyzePatterns: (matter_id: string) =>
+      request<PatternAnalysis>(`/api/matters/${matter_id}/discovery/analyze-patterns`, { method: "POST" }),
+  },
 };
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -85,12 +127,33 @@ export interface DashboardStats {
   open_matters: number;
   pending_reviews: number;
   unread_alerts: number;
+  overdue_timeline: number;
+  critical_deadlines: number;
   recent_sessions: Array<{
     id: string;
     matter_id: string;
     query_text: string;
     status: string;
     created_at: string;
+  }>;
+  upcoming_events: Array<{
+    id: string;
+    matter_id: string;
+    matter_title: string;
+    event_type: string;
+    title: string;
+    event_date: string;
+    status: string;
+  }>;
+  critical_discovery: Array<{
+    id: string;
+    matter_id: string;
+    matter_title: string;
+    title: string;
+    item_type: string;
+    deadline: string | null;
+    priority: string;
+    status: string;
   }>;
 }
 
@@ -104,6 +167,7 @@ export interface Matter {
   practice_area?: string;
   industry?: string;
   created_at: string;
+  closed_at?: string | null;
 }
 
 export interface Document {
@@ -133,6 +197,7 @@ export interface AgentSession {
   confidence_score?: number;
   status: string;
   agent_route?: string;
+  review_reason?: string | null;
   created_at: string;
   source_chunks?: SourceChunk[];
   user_id?: string;
@@ -147,6 +212,74 @@ export interface ComplianceAlert {
   severity: "low" | "medium" | "high" | "critical";
   status: "unread" | "read" | "dismissed";
   created_at: string;
+}
+
+export interface TimelineEvent {
+  id: string;
+  matter_id: string;
+  event_type: "filing" | "hearing" | "deposition" | "deadline" | "discovery" | "settlement" | "motion" | "order" | "other";
+  title: string;
+  description?: string;
+  event_date: string;
+  status: "upcoming" | "completed" | "overdue" | "cancelled";
+  source: string;
+  document_ref?: string;
+  created_at: string;
+}
+
+export interface ExtractedTimelineEvent {
+  event_type: string;
+  title: string;
+  description?: string;
+  event_date: string;
+  document_ref?: string;
+}
+
+export interface DiscoveryItem {
+  id: string;
+  matter_id: string;
+  item_type: "interrogatory" | "document_request" | "deposition" | "admission" | "subpoena" | "expert_disclosure" | "other";
+  title: string;
+  description?: string;
+  deadline?: string;
+  status: "pending" | "in_progress" | "responded" | "objected" | "overdue" | "completed";
+  priority: "low" | "medium" | "high" | "critical";
+  assigned_to?: string;
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DiscoveryStats {
+  total: number;
+  pending: number;
+  in_progress: number;
+  overdue: number;
+  completed: number;
+  responded: number;
+  objected: number;
+  by_type: Record<string, number>;
+  by_priority: Record<string, number>;
+}
+
+export interface PatternAnalysis {
+  patterns: Array<{
+    type: string;
+    title: string;
+    description: string;
+    severity: "info" | "warning" | "critical";
+    items: string[];
+  }>;
+  summary: string;
+  recommendations: string[];
+}
+
+export interface TimelineEventWithMatter extends TimelineEvent {
+  matter_title: string;
+}
+
+export interface DiscoveryItemWithMatter extends DiscoveryItem {
+  matter_title: string;
 }
 
 export function getWsUrl(path: string): string {

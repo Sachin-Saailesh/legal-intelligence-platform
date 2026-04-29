@@ -18,6 +18,17 @@ from rag.retriever import HybridRetriever
 
 logger = get_logger(__name__)
 
+# ── Intent thresholds ─────────────────────────────────────────────────────────
+# Higher-stakes intents require tighter grounding before auto-approval.
+INTENT_THRESHOLDS: dict[str, float] = {
+    "contract_review": 0.85,   # direct clause analysis — client exposure
+    "drafting":        0.85,   # generating legal text — must be source-grounded
+    "litigation_risk": 0.87,   # probability predictions — highest bar
+    "case_research":   0.72,   # exploratory; attorney reads sources anyway
+    "compliance_check":0.72,   # regulatory updates; moderate tolerance
+}
+DEFAULT_THRESHOLD = 0.72
+
 # ── State schema ───────────────────────────────────────────────────────────────
 
 Intent = Literal[
@@ -40,6 +51,7 @@ class LexMindState(TypedDict):
     final_output: str
     confidence: float
     requires_human_review: bool
+    review_reason: str          # accumulated explanation of why review was triggered
     session_id: str
     metadata: dict[str, Any]
     stream_callback: Any  # optional async callable for WebSocket streaming
@@ -97,7 +109,7 @@ async def classify_intent(state: LexMindState) -> dict:
     if state.get("stream_callback"):
         await state["stream_callback"]({"type": "intent_classified", "intent": intent})
 
-    return {"intent": intent, "sub_tasks": sub_tasks}
+    return {"intent": intent, "sub_tasks": sub_tasks, "review_reason": ""}
 
 
 # ── Routing ───────────────────────────────────────────────────────────────────
@@ -122,7 +134,6 @@ def _make_agent_node(agent_fn, name: str):
         if state.get("stream_callback"):
             await state["stream_callback"]({"type": "agent_start", "agent": name})
 
-        # Dependencies injected via module-level singletons (set in main.py lifespan)
         from agents.orchestrator import _retriever, _guard
         result = await agent_fn(
             state,
@@ -141,13 +152,37 @@ def _make_agent_node(agent_fn, name: str):
         for c in result.get("retrieved_chunks", []):
             existing_chunks[c["chunk_id"]] = c
 
-        requires_review = state.get("requires_human_review", False) or result.get(
-            "requires_human_review", False
+        # Re-adjudicate using intent-specific threshold instead of guard's default.
+        # Agents always expose guard.confidence in their agent_outputs.
+        intent = state.get("intent", "case_research")
+        threshold = INTENT_THRESHOLDS.get(intent, DEFAULT_THRESHOLD)
+        agent_guard_conf = (
+            result.get("agent_outputs", {})
+            .get(name, {})
+            .get("guard", {})
+            .get("confidence")
         )
+
+        review_reason = state.get("review_reason", "")
+        if agent_guard_conf is not None:
+            actually_requires_review = agent_guard_conf < threshold
+            if actually_requires_review:
+                line = (
+                    f"{name.replace('_', ' ')} confidence {agent_guard_conf*100:.0f}% "
+                    f"is below the {threshold*100:.0f}% threshold required for {intent.replace('_', ' ')} queries"
+                )
+                review_reason = (review_reason + "; " + line).lstrip("; ")
+        else:
+            # Agent didn't surface guard confidence — fall back to its own decision
+            actually_requires_review = result.get("requires_human_review", False)
+
+        requires_review = state.get("requires_human_review", False) or actually_requires_review
+
         return {
             "agent_outputs": merged_agent_outputs,
             "retrieved_chunks": list(existing_chunks.values()),
             "requires_human_review": requires_review,
+            "review_reason": review_reason,
         }
 
     node.__name__ = name
@@ -203,7 +238,7 @@ async def synthesize(state: LexMindState) -> dict:
     if state.get("stream_callback"):
         await state["stream_callback"]({"type": "chunk", "text": final_output})
 
-    # Mandatory hallucination guard on final synthesis
+    # Mandatory hallucination guard on final synthesis — uses intent-specific threshold
     from rag.reranker import RankedChunk
     ranked_chunks = [
         RankedChunk(
@@ -218,8 +253,29 @@ async def synthesize(state: LexMindState) -> dict:
     ]
     guard_result = await _guard.validate(final_output[:500], ranked_chunks)
 
+    intent = state.get("intent", "case_research")
+    threshold = INTENT_THRESHOLDS.get(intent, DEFAULT_THRESHOLD)
+    synth_passed = guard_result.confidence >= threshold
     confidence = guard_result.confidence
-    requires_review = state.get("requires_human_review", False) or not guard_result.passed
+
+    review_reason = state.get("review_reason", "")
+
+    # If upstream specialists already flagged review, note that the synthesizer may have passed
+    upstream_requires_review = state.get("requires_human_review", False)
+    if not synth_passed:
+        synth_line = (
+            f"synthesizer confidence {confidence*100:.0f}% is below the "
+            f"{threshold*100:.0f}% threshold for {intent.replace('_', ' ')} queries"
+        )
+        review_reason = (review_reason + "; " + synth_line).lstrip("; ")
+    elif upstream_requires_review and review_reason:
+        # Synthesizer passed but a specialist didn't — make this explicit
+        review_reason = (
+            review_reason
+            + f"; synthesizer passed at {confidence*100:.0f}% — review triggered by specialist agent"
+        )
+
+    requires_review = upstream_requires_review or not synth_passed
 
     if state.get("stream_callback"):
         for c in chunks:
@@ -229,15 +285,18 @@ async def synthesize(state: LexMindState) -> dict:
                 "type": "complete",
                 "confidence": confidence,
                 "requires_review": requires_review,
+                "review_reason": review_reason or None,
             }
         )
 
     logger.info(
         "synthesize_complete",
         session_id=state["session_id"],
-        guard_passed=guard_result.passed,
+        synth_guard_passed=synth_passed,
         confidence=round(confidence, 4),
         requires_review=requires_review,
+        intent=intent,
+        threshold=threshold,
         output_len=len(final_output),
     )
 
@@ -245,6 +304,7 @@ async def synthesize(state: LexMindState) -> dict:
         "final_output": final_output,
         "confidence": confidence,
         "requires_human_review": requires_review,
+        "review_reason": review_reason,
     }
 
 
@@ -268,6 +328,7 @@ async def human_review_gate(state: LexMindState) -> dict:
                     final_output=state.get("final_output"),
                     confidence_score=state.get("confidence"),
                     agent_route=json.dumps(list(state.get("agent_outputs", {}).keys())),
+                    review_reason=state.get("review_reason") or None,
                 )
             )
             logger.info("human_review_gate_halted", session_id=session_id)
@@ -301,6 +362,7 @@ async def store_output(state: LexMindState) -> dict:
                 final_output=state.get("final_output"),
                 confidence_score=state.get("confidence"),
                 agent_route=json.dumps(list(state.get("agent_outputs", {}).keys())),
+                review_reason=state.get("review_reason") or None,
             )
         )
 
@@ -453,6 +515,7 @@ async def run_session(
         "final_output": "",
         "confidence": 0.0,
         "requires_human_review": False,
+        "review_reason": "",
         "session_id": session_id,
         "metadata": metadata or {},
         "stream_callback": stream_callback,
