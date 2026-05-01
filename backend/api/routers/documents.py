@@ -109,30 +109,42 @@ async def _auto_extract_timeline(document_id: str, matter_id: str) -> None:
 async def _run_ingestion(document_id: str) -> None:
     from rag.ingestion import DocumentIngestionPipeline
     from rag.embeddings import embedding_client, llm_client
-    from graph.neo4j_client import Neo4jClient
 
-    async with AsyncSessionFactory() as db:
-        result = await db.execute(select(Document).where(Document.id == uuid.UUID(document_id)))
-        document = result.scalar_one_or_none()
-        if not document:
-            logger.error("ingestion_doc_not_found", document_id=document_id)
-            return
+    document = None
+    try:
+        async with AsyncSessionFactory() as db:
+            result = await db.execute(select(Document).where(Document.id == uuid.UUID(document_id)))
+            document = result.scalar_one_or_none()
+            if not document:
+                logger.error("ingestion_doc_not_found", document_id=document_id)
+                return
 
-        # Get qdrant client from app state
-        from api.main import app
-        qdrant = app.state.qdrant_client
-        neo4j = app.state.neo4j_client
+            from api.main import app
+            qdrant = app.state.qdrant_client
+            neo4j = app.state.neo4j_client
 
-        pipeline = DocumentIngestionPipeline(
-            embedding_client=embedding_client,
-            llm_client=llm_client,
-            qdrant_client=qdrant,
-            neo4j_client=neo4j,
-        )
-        await pipeline.ingest(document, db)
+            pipeline = DocumentIngestionPipeline(
+                embedding_client=embedding_client,
+                llm_client=llm_client,
+                qdrant_client=qdrant,
+                neo4j_client=neo4j,
+            )
+            await pipeline.ingest(document, db)
 
-    # Chain timeline extraction after ingestion completes
-    await _auto_extract_timeline(document_id, str(document.matter_id))
+        # Chain timeline extraction after ingestion completes
+        await _auto_extract_timeline(document_id, str(document.matter_id))
+
+    except Exception as exc:
+        logger.error("ingestion_task_failed", document_id=document_id, error=str(exc))
+        try:
+            async with AsyncSessionFactory() as db:
+                result = await db.execute(select(Document).where(Document.id == uuid.UUID(document_id)))
+                doc = result.scalar_one_or_none()
+                if doc:
+                    doc.ingestion_status = IngestionStatus.failed
+                    await db.commit()
+        except Exception:
+            pass
 
 
 @router.post("/{matter_id}/documents", status_code=status.HTTP_201_CREATED)
@@ -154,9 +166,20 @@ async def upload_document(
     if not matter:
         raise HTTPException(status_code=404, detail="Matter not found")
 
+    # Validate file type
+    allowed_extensions = {"pdf", "docx", "doc", "txt"}
+    ext = Path(file.filename or "").suffix.lower().lstrip(".")
+    if ext not in allowed_extensions:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Unsupported file type '.{ext}'. Allowed: {', '.join(sorted(allowed_extensions))}",
+        )
+
     # Validate size
     max_bytes = settings.max_upload_size_mb * 1024 * 1024
     contents = await file.read()
+    if not contents:
+        raise HTTPException(status_code=422, detail="Uploaded file is empty.")
     if len(contents) > max_bytes:
         raise HTTPException(
             status_code=413,
@@ -171,8 +194,7 @@ async def upload_document(
     file_path = upload_dir / f"{doc_id}_{filename}"
     file_path.write_bytes(contents)
 
-    # Detect doc type from extension
-    ext = Path(filename).suffix.lower().lstrip(".")
+    # Detect doc type from extension (ext already computed above)
     doc_type_map = {
         "pdf": "pdf",
         "docx": "contract",
