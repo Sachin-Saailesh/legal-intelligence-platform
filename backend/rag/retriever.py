@@ -175,27 +175,30 @@ class HybridRetriever:
         self, matter_id: str
     ) -> tuple[list[str], list[str], dict[str, Chunk]]:
         cache_key = f"bm25_corpus:{matter_id}"
-        cached = await self._redis.get(cache_key)
-        if cached:
-            data = json.loads(cached)
-            corpus = data["texts"]
-            chunk_ids = data["chunk_ids"]
-            chunk_payloads = data["payloads"]
-            chunk_map = {
-                cid: Chunk(
-                    chunk_id=cid,
-                    doc_id=p.get("doc_id", ""),
-                    matter_id=matter_id,
-                    text=p.get("text", ""),
-                    page_number=p.get("page_number", 0),
-                    chunk_index=p.get("chunk_index", 0),
-                    clause_type=p.get("clause_type", "general"),
-                    section_heading=p.get("section_heading", ""),
-                    metadata=p,
-                )
-                for cid, p in zip(chunk_ids, chunk_payloads)
-            }
-            return corpus, chunk_ids, chunk_map
+
+        # Check Redis cache only if Redis is available
+        if self._redis is not None:
+            cached = await self._redis.get(cache_key)
+            if cached:
+                data = json.loads(cached)
+                corpus = data["texts"]
+                chunk_ids = data["chunk_ids"]
+                chunk_payloads = data["payloads"]
+                chunk_map = {
+                    cid: Chunk(
+                        chunk_id=cid,
+                        doc_id=p.get("doc_id", ""),
+                        matter_id=matter_id,
+                        text=p.get("text", ""),
+                        page_number=p.get("page_number", 0),
+                        chunk_index=p.get("chunk_index", 0),
+                        clause_type=p.get("clause_type", "general"),
+                        section_heading=p.get("section_heading", ""),
+                        metadata=p,
+                    )
+                    for cid, p in zip(chunk_ids, chunk_payloads)
+                }
+                return corpus, chunk_ids, chunk_map
 
         # Scroll all matter chunks from Qdrant
         from qdrant_client.models import Filter, FieldCondition, MatchValue
@@ -227,12 +230,13 @@ class HybridRetriever:
                 break
             offset = next_offset
 
-        # Cache corpus
-        await self._redis.setex(
-            cache_key,
-            self._bm25_cache_ttl,
-            json.dumps({"texts": corpus, "chunk_ids": chunk_ids, "payloads": chunk_payloads}),
-        )
+        # Cache corpus if Redis is available
+        if self._redis is not None:
+            await self._redis.setex(
+                cache_key,
+                self._bm25_cache_ttl,
+                json.dumps({"texts": corpus, "chunk_ids": chunk_ids, "payloads": chunk_payloads}),
+            )
         chunk_map = {
             cid: Chunk(
                 chunk_id=cid,

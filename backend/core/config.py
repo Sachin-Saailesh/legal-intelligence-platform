@@ -22,6 +22,7 @@ class Settings(BaseSettings):
 
     # Qdrant
     qdrant_url: str = Field("http://qdrant:6333", env="QDRANT_URL")
+    qdrant_api_key: str = Field("", env="QDRANT_API_KEY")
     qdrant_collection: str = Field("lexmind_documents", env="QDRANT_COLLECTION")
 
     # Neo4j
@@ -53,6 +54,10 @@ class Settings(BaseSettings):
     # File upload
     upload_dir: str = Field("/app/uploads", env="UPLOAD_DIR")
     max_upload_size_mb: int = Field(50, env="MAX_UPLOAD_SIZE_MB")
+
+    # Feature flags — set to "false" to disable optional services in cloud deployment
+    neo4j_enabled: bool = Field(True, env="NEO4J_ENABLED")
+    redis_enabled: bool = Field(True, env="REDIS_ENABLED")
 
     # Application
     app_env: str = Field("development", env="APP_ENV")

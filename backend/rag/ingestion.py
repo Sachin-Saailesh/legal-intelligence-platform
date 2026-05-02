@@ -200,7 +200,7 @@ class DocumentIngestionPipeline:
         embedding_client: AzureEmbeddingClient,
         llm_client: AzureLLMClient,
         qdrant_client: Any,
-        neo4j_client: "Neo4jClient",
+        neo4j_client: "Neo4jClient | None",
     ) -> None:
         self._embedder = embedding_client
         self._llm = llm_client
@@ -291,9 +291,10 @@ class DocumentIngestionPipeline:
                 wait=True,
             )
 
-            # 5. Build knowledge graph edges
-            entities_list = await _extract_entities_for_graph(all_chunks, doc_id, self._llm)
-            await self._neo4j.ingest_document_entities(doc_id, matter_id, entities_list)
+            # 5. Build knowledge graph edges (skipped if Neo4j is disabled)
+            if self._neo4j is not None:
+                entities_list = await _extract_entities_for_graph(all_chunks, doc_id, self._llm)
+                await self._neo4j.ingest_document_entities(doc_id, matter_id, entities_list)
 
             # 6. Update document status
             await db.execute(

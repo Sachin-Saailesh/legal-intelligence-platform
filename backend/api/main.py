@@ -28,7 +28,10 @@ async def lifespan(app: FastAPI):
     from qdrant_client import QdrantClient
     from qdrant_client.models import Distance, VectorParams
 
-    qdrant = QdrantClient(url=settings.qdrant_url)
+    qdrant = QdrantClient(
+        url=settings.qdrant_url,
+        api_key=settings.qdrant_api_key or None,
+    )
     existing = [c.name for c in qdrant.get_collections().collections]
     if settings.qdrant_collection not in existing:
         qdrant.create_collection(
@@ -41,16 +44,26 @@ async def lifespan(app: FastAPI):
         logger.info("qdrant_collection_created", collection=settings.qdrant_collection)
     app.state.qdrant_client = qdrant
 
-    # Neo4j
-    from graph.neo4j_client import Neo4jClient
-    neo4j = Neo4jClient()
-    await neo4j.connect()
-    await neo4j.create_schema_constraints()
+    # Neo4j (optional — disabled in cloud deployment via NEO4J_ENABLED=false)
+    neo4j = None
+    if settings.neo4j_enabled:
+        from graph.neo4j_client import Neo4jClient
+        neo4j = Neo4jClient()
+        await neo4j.connect()
+        await neo4j.create_schema_constraints()
+        logger.info("neo4j_connected")
+    else:
+        logger.info("neo4j_disabled")
     app.state.neo4j_client = neo4j
 
-    # Redis
-    import redis.asyncio as aioredis
-    redis_client = aioredis.from_url(settings.redis_url, decode_responses=True)
+    # Redis (optional — used for BM25 cache and Celery; disabled via REDIS_ENABLED=false)
+    redis_client = None
+    if settings.redis_enabled:
+        import redis.asyncio as aioredis
+        redis_client = aioredis.from_url(settings.redis_url, decode_responses=True)
+        logger.info("redis_connected")
+    else:
+        logger.info("redis_disabled")
     app.state.redis_client = redis_client
 
     # Init orchestrator singletons
@@ -76,8 +89,10 @@ async def lifespan(app: FastAPI):
     yield
 
     # ── Shutdown ───────────────────────────────────────────────────────────────
-    await neo4j.close()
-    await redis_client.aclose()
+    if neo4j:
+        await neo4j.close()
+    if redis_client:
+        await redis_client.aclose()
     await engine.dispose()
     logger.info("lexmind_shutdown")
 
