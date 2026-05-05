@@ -491,15 +491,20 @@ async def run_session(
 
     session_id = session_id or str(uuid_mod.uuid4())
 
-    # Create session record
+    # Upsert session record: the POST handler pre-creates it with status="pending",
+    # so we just update to "processing". If for some reason it doesn't exist yet, insert.
+    from sqlalchemy.dialects.postgresql import insert as pg_insert
     async with AsyncSessionFactory() as db:
         await db.execute(
-            insert(AgentSession).values(
+            pg_insert(AgentSession).values(
                 id=uuid_mod.UUID(session_id),
                 matter_id=uuid_mod.UUID(matter_id),
                 user_id=uuid_mod.UUID(user_id),
                 query_text=query,
                 status="processing",
+            ).on_conflict_do_update(
+                index_elements=["id"],
+                set_={"status": "processing"},
             )
         )
         await db.commit()

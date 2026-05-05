@@ -53,6 +53,7 @@ class IngestionStatus(str, PyEnum):
 
 
 class SessionStatus(str, PyEnum):
+    pending = "pending"
     pending_review = "pending_review"
     approved = "approved"
     rejected = "rejected"

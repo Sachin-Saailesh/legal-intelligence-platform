@@ -5,20 +5,20 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
-from sqlalchemy import select
+from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.dependencies import get_current_user
 from core.logging import get_logger
-from db.models import AgentSession, Matter, SourceChunk, User
+from db.models import AgentSession, Matter, SessionStatus, SourceChunk, User
 from db.session import get_db
 
 router = APIRouter(prefix="/api/queries", tags=["queries"])
 logger = get_logger(__name__)
 
-# In-memory queue: session_id -> asyncio.Queue of frames
+# In-memory queue: session_id -> asyncio.Queue of frames (instance-local)
 _stream_queues: dict[str, asyncio.Queue] = {}
-# Pending orchestrator params: session_id -> params dict
+# Pending orchestrator params: session_id -> params dict (instance-local)
 _pending_sessions: dict[str, dict] = {}
 
 
@@ -59,7 +59,6 @@ async def _run_orchestrator(
         if queue:
             await queue.put(None)  # sentinel: stream done
 
-        # Defer cleanup to allow reconnects to drain the queue
         async def _cleanup():
             await asyncio.sleep(60)
             _stream_queues.pop(session_id, None)
@@ -73,7 +72,6 @@ async def create_query(
     current_user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
-    # Verify matter
     result = await db.execute(
         select(Matter).where(
             Matter.id == uuid.UUID(body.matter_id),
@@ -84,6 +82,20 @@ async def create_query(
         raise HTTPException(status_code=404, detail="Matter not found")
 
     session_id = str(uuid.uuid4())
+
+    # Pre-create the session in DB so any Cloud Run instance can find the
+    # query params when the WebSocket connects (in-memory dicts are per-instance).
+    await db.execute(
+        insert(AgentSession).values(
+            id=uuid.UUID(session_id),
+            matter_id=uuid.UUID(body.matter_id),
+            user_id=current_user.id,
+            query_text=body.query,
+            status=SessionStatus.pending,
+        )
+    )
+    await db.commit()
+
     _stream_queues[session_id] = asyncio.Queue(maxsize=500)
     _pending_sessions[session_id] = {
         "query": body.query,
@@ -144,18 +156,37 @@ async def stream_session(
     session_id: str,
 ):
     await websocket.accept()
+
     queue = _stream_queues.get(session_id)
+    params = _pending_sessions.pop(session_id, None)
 
     if not queue:
-        # Session not found — already completed or expired
-        await websocket.close()
-        return
+        # This instance didn't handle the POST (Cloud Run multi-instance).
+        # Fetch session params from DB and create a local queue.
+        from db.session import AsyncSessionFactory
+        async with AsyncSessionFactory() as db:
+            result = await db.execute(
+                select(AgentSession).where(AgentSession.id == uuid.UUID(session_id))
+            )
+            session_row = result.scalar_one_or_none()
 
-    # Start the orchestrator task here, inside the active WebSocket request.
-    # Cloud Run keeps CPU allocated for the duration of any active HTTP connection
-    # (WebSockets included), so this avoids the CPU-throttling issue that kills
-    # tasks started as FastAPI BackgroundTasks after the POST response is sent.
-    params = _pending_sessions.pop(session_id, None)
+        if not session_row or session_row.status not in (
+            SessionStatus.pending, SessionStatus.processing
+        ):
+            await websocket.close()
+            return
+
+        queue = asyncio.Queue(maxsize=500)
+        _stream_queues[session_id] = queue
+        params = {
+            "query": session_row.query_text,
+            "matter_id": str(session_row.matter_id),
+            "user_id": str(session_row.user_id),
+            "metadata": {},
+        }
+
+    # Start the orchestrator task inside the active WebSocket connection so
+    # Cloud Run keeps CPU allocated for its full duration.
     if params:
         asyncio.create_task(_run_orchestrator(session_id=session_id, **params))
 
@@ -192,7 +223,6 @@ async def get_session(
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
 
-    # Verify matter belongs to firm
     matter_result = await db.execute(
         select(Matter).where(
             Matter.id == session.matter_id,
