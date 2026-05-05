@@ -43,6 +43,16 @@ async def lifespan(app: FastAPI):
             ),
         )
         logger.info("qdrant_collection_created", collection=settings.qdrant_collection)
+
+    # Ensure payload index exists on matter_id — required for filtered search/scroll
+    # in Qdrant server 1.12+. create_payload_index is idempotent.
+    from qdrant_client.models import PayloadSchemaType
+    await qdrant.create_payload_index(
+        collection_name=settings.qdrant_collection,
+        field_name="matter_id",
+        field_schema=PayloadSchemaType.KEYWORD,
+    )
+    logger.info("qdrant_index_ensured", field="matter_id")
     app.state.qdrant_client = qdrant
 
     # Neo4j (optional — disabled in cloud deployment via NEO4J_ENABLED=false)
