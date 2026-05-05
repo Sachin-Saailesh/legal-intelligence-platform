@@ -14,6 +14,7 @@ import {
 } from "@/components/agent-pipeline-viz";
 import { TimelineView } from "@/components/timeline-view";
 import { DiscoveryTracker } from "@/components/discovery-tracker";
+import * as Dialog from "@radix-ui/react-dialog";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -78,6 +79,60 @@ function RouteBadge({ route }: { route?: string }) {
     <span className={`px-2 py-0.5 rounded-[4px] text-[9px] font-bold tracking-tight uppercase ${style}`}>
       {label}
     </span>
+  );
+}
+
+// ── Tooltip ──────────────────────────────────────────────────────────────────
+function Tip({ text, children }: { text: string; children: React.ReactNode }) {
+  return (
+    <span className="relative group/tip inline-flex items-center">
+      {children}
+      <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max max-w-[210px] px-2.5 py-1.5 rounded-md bg-slate-800 border border-slate-600/60 text-[11px] text-slate-200 leading-snug text-center shadow-xl opacity-0 group-hover/tip:opacity-100 transition-opacity duration-150 z-50">
+        {text}
+        <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800" />
+      </span>
+    </span>
+  );
+}
+
+// ── Help Drawer ───────────────────────────────────────────────────────────────
+function HelpDrawer({
+  title,
+  steps,
+  trigger,
+}: {
+  title: string;
+  steps: { icon: string; heading: string; body: string }[];
+  trigger: React.ReactNode;
+}) {
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger asChild>{trigger}</Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40" />
+        <Dialog.Content className="fixed right-0 top-0 h-full w-80 bg-[#1A1A2E] border-l border-slate-700/60 z-50 flex flex-col shadow-2xl outline-none">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-700/60">
+            <Dialog.Title className="text-sm font-bold text-white">{title}</Dialog.Title>
+            <Dialog.Close className="text-slate-500 hover:text-white transition-colors">
+              <span className="material-symbols-outlined text-[20px]">close</span>
+            </Dialog.Close>
+          </div>
+          <div className="flex-1 overflow-y-auto px-5 py-5 space-y-5">
+            {steps.map((s, i) => (
+              <div key={i} className="flex gap-3">
+                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-[#0A192F] border border-slate-700/60 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-sky-400 text-[15px]">{s.icon}</span>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-slate-200 mb-0.5">{s.heading}</p>
+                  <p className="text-xs text-slate-400 leading-relaxed">{s.body}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }
 
@@ -153,8 +208,16 @@ function CompletedResultPanel({ result }: { result: CompletedResult }) {
     <div className="space-y-3">
       {/* Meta row */}
       <div className="flex items-center gap-2 flex-wrap">
-        {result.agentRoute && <RouteBadge route={result.agentRoute} />}
-        {result.confidence != null && <ConfidenceBars score={result.confidence} />}
+        {result.agentRoute && (
+          <Tip text="The specialist AI agent that handled this query">
+            <RouteBadge route={result.agentRoute} />
+          </Tip>
+        )}
+        {result.confidence != null && (
+          <Tip text="How well the answer is grounded in your source documents">
+            <ConfidenceBars score={result.confidence} />
+          </Tip>
+        )}
         <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
           result.status === "pending_review"
             ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
@@ -266,7 +329,7 @@ function LiveAgentStreamPanel({
     }
   }, [onComplete, agentRoute]);
 
-  const { isConnected, isDone, close } = useAgentStream(sessionId, { onFrame: handleFrame });
+  const { isDone, close } = useAgentStream(sessionId, { onFrame: handleFrame });
   const fullText = chunks.join("");
   const isSynthesizing = ["synthesizing", "guarding", "complete", "review"].includes(stage);
 
@@ -281,17 +344,6 @@ function LiveAgentStreamPanel({
         confidence={confidence}
         compact={isSynthesizing}
       />
-
-      {/* Connecting indicator */}
-      {!isDone && !isConnected && (
-        <div className="flex items-center gap-2 text-xs text-slate-500">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-sky-500" />
-          </span>
-          Connecting to agent stream…
-        </div>
-      )}
 
       {requiresReview && (
         <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-amber-400 text-xs font-medium">
@@ -376,6 +428,16 @@ export default function MatterDetailPage() {
   const [queryError, setQueryError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const conversationBottomRef = useRef<HTMLDivElement>(null);
+
+  const isQueryRunning = conversation.some((c) => !c.result);
+
+  // Block browser refresh / tab close while an analysis is in progress
+  useEffect(() => {
+    if (!isQueryRunning) return;
+    const handler = (e: BeforeUnloadEvent) => { e.preventDefault(); };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [isQueryRunning]);
 
   useEffect(() => {
     api.matters.get(id).then((res) => { if (!res.error) setMatter(res.data); });
@@ -548,13 +610,15 @@ export default function MatterDetailPage() {
               )}
             </div>
             {matter.status === "active" ? (
-              <button
-                onClick={() => setShowCloseConfirm(true)}
-                className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-slate-300 border border-slate-600 rounded-md hover:border-amber-500/50 hover:text-amber-400 transition-colors flex-shrink-0"
-              >
-                <span className="material-symbols-outlined text-base">lock</span>
-                Close Matter
-              </button>
+              <Tip text="Mark this matter as inactive. Documents and history are preserved.">
+                <button
+                  onClick={() => setShowCloseConfirm(true)}
+                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-slate-300 border border-slate-600 rounded-md hover:border-amber-500/50 hover:text-amber-400 transition-colors flex-shrink-0"
+                >
+                  <span className="material-symbols-outlined text-base">lock</span>
+                  Close Matter
+                </button>
+              </Tip>
             ) : (
               <button
                 onClick={toggleMatterStatus}
@@ -606,6 +670,27 @@ export default function MatterDetailPage() {
         {/* Documents Tab */}
         {tab === "documents" && (
           <div className="space-y-4">
+            {/* Upload zone header */}
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-slate-500">Upload files to make them searchable by the AI pipeline.</span>
+              <HelpDrawer
+                title="How to Upload Documents"
+                steps={[
+                  { icon: "upload_file", heading: "Choose your file", body: "Click Browse Files or drag a PDF, DOCX, or TXT file directly onto the upload area. Max size is 50MB per file." },
+                  { icon: "hourglass_top", heading: "Processing starts automatically", body: "The file is sent to the server immediately. You will see its status change from Pending to Processing." },
+                  { icon: "auto_fix_high", heading: "OCR and indexing", body: "The system reads the document, runs OCR on scanned pages, and splits the text into searchable chunks." },
+                  { icon: "check_circle", heading: "Ready to query", body: "Once status shows Complete, the document's content is indexed and available to the AI when you run an analysis." },
+                  { icon: "warning", heading: "If status shows Failed", body: "The file may be corrupted or password protected. Try exporting it as a plain PDF and uploading again." },
+                ]}
+                trigger={
+                  <button className="flex items-center gap-1.5 text-[11px] text-slate-500 hover:text-sky-400 transition-colors font-medium">
+                    <span className="material-symbols-outlined text-[14px]">help_outline</span>
+                    How does uploading work?
+                  </button>
+                }
+              />
+            </div>
+
             {/* Upload zone */}
             <div
               onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
@@ -623,9 +708,11 @@ export default function MatterDetailPage() {
                 {uploading ? "Uploading…" : "Drop PDFs or DOCX files here"}
               </p>
               <p className="text-slate-500 text-xs mt-1">Max 50MB · OCR and indexing start automatically</p>
-              <button className="mt-5 px-5 py-2 bg-[#1E3A5F] text-sky-400 text-xs font-semibold rounded-md border border-sky-500/20 hover:bg-[#1E3A5F]/80 transition-colors">
-                Browse Files
-              </button>
+              <Tip text="Supports PDF, DOCX, DOC, and TXT files up to 50MB">
+                <button className="mt-5 px-5 py-2 bg-[#1E3A5F] text-sky-400 text-xs font-semibold rounded-md border border-sky-500/20 hover:bg-[#1E3A5F]/80 transition-colors">
+                  Browse Files
+                </button>
+              </Tip>
               <input ref={fileRef} type="file" accept=".pdf,.docx,.doc,.txt" className="hidden" onChange={handleFileInput} disabled={uploading} />
             </div>
 
@@ -670,10 +757,44 @@ export default function MatterDetailPage() {
         {/* Query Tab */}
         {tab === "query" && (
           <div className="space-y-6">
+            {/* Running banner */}
+            {isQueryRunning && (
+              <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-sky-500/10 border border-sky-500/30 text-sky-300 text-xs font-medium">
+                <span className="relative flex h-2 w-2 flex-shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-sky-500" />
+                </span>
+                Analysis in progress. Stay on this page until it finishes.
+              </div>
+            )}
+
+            {/* Header row with help drawer */}
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-slate-500">
+                {conversation.length === 0 ? "Ask the Intelligence Layer something about this matter." : `${conversation.length} quer${conversation.length === 1 ? "y" : "ies"} in this matter`}
+              </span>
+              <HelpDrawer
+                title="How to Run an Analysis"
+                steps={[
+                  { icon: "edit_note", heading: "Type your question", body: "Describe what you want to know about this matter. Be specific — mention clauses, risks, or parties if relevant." },
+                  { icon: "send", heading: "Submit", body: "Click Run Analysis or press Cmd + Enter. The system will route your question to the right specialist agent." },
+                  { icon: "psychology", heading: "Watch the pipeline", body: "The pipeline view shows which agents are working. Contract, litigation, research, and drafting agents run in parallel when needed." },
+                  { icon: "source", heading: "Review sources", body: "Every answer includes numbered source citations from your uploaded documents. Expand them to read the exact passage used." },
+                  { icon: "policy", heading: "Attorney review flag", body: "If the AI confidence is low, the result is flagged for attorney review. You can find flagged responses in the Review Queue." },
+                ]}
+                trigger={
+                  <button className="flex items-center gap-1.5 text-[11px] text-slate-500 hover:text-sky-400 transition-colors font-medium">
+                    <span className="material-symbols-outlined text-[14px]">help_outline</span>
+                    How does this work?
+                  </button>
+                }
+              />
+            </div>
+
             {/* Conversation thread */}
             {conversation.length === 0 && (
               <div className="text-center py-10 text-slate-600 text-sm">
-                No queries yet. Ask the Intelligence Layer something about this matter.
+                No queries yet.
               </div>
             )}
 
@@ -721,18 +842,20 @@ export default function MatterDetailPage() {
                 />
                 <div className="flex items-center justify-between p-3 bg-[#1E3A5F]/30 rounded-b-lg">
                   <span className="text-[10px] text-slate-600 font-mono">⌘ + Enter to submit</span>
-                  <button
-                    onClick={handleQuery}
-                    disabled={submitting || !query.trim() || conversation.some(c => !c.result)}
-                    className="flex items-center gap-2 px-5 py-2 bg-gradient-to-br from-sky-500 to-blue-600 text-white text-xs font-bold rounded-md disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 active:scale-95 transition-all"
-                  >
-                    {submitting || conversation.some(c => !c.result) ? (
-                      <span className="animate-spin material-symbols-outlined text-base">refresh</span>
-                    ) : (
-                      <span className="material-symbols-outlined text-base">send</span>
-                    )}
-                    {submitting || conversation.some(c => !c.result) ? "Analysis Running..." : "Run Analysis"}
-                  </button>
+                  <Tip text={isQueryRunning ? "Wait for the current analysis to finish" : "Submit your question (or press Cmd + Enter)"}>
+                    <button
+                      onClick={handleQuery}
+                      disabled={submitting || !query.trim() || isQueryRunning}
+                      className="flex items-center gap-2 px-5 py-2 bg-gradient-to-br from-sky-500 to-blue-600 text-white text-xs font-bold rounded-md disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 active:scale-95 transition-all"
+                    >
+                      {submitting || isQueryRunning ? (
+                        <span className="animate-spin material-symbols-outlined text-base">refresh</span>
+                      ) : (
+                        <span className="material-symbols-outlined text-base">send</span>
+                      )}
+                      {submitting || isQueryRunning ? "Analysis Running..." : "Run Analysis"}
+                    </button>
+                  </Tip>
                 </div>
               </div>
 
