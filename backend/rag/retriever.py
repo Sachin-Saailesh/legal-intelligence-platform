@@ -119,7 +119,7 @@ class HybridRetriever:
                 FieldCondition(key="jurisdiction", match=MatchValue(value=jurisdiction))
             )
 
-        results = self._qdrant.search(
+        results = await self._qdrant.search(
             collection_name=settings.qdrant_collection,
             query_vector=query_vec,
             query_filter=Filter(must=must_conditions),
@@ -209,7 +209,7 @@ class HybridRetriever:
         offset = None
 
         while True:
-            results, next_offset = self._qdrant.scroll(
+            results, next_offset = await self._qdrant.scroll(
                 collection_name=settings.qdrant_collection,
                 scroll_filter=Filter(
                     must=[FieldCondition(key="matter_id", match=MatchValue(value=matter_id))]

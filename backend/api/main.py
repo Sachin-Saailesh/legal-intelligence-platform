@@ -25,16 +25,17 @@ async def lifespan(app: FastAPI):
         await conn.run_sync(Base.metadata.create_all)
 
     # Qdrant client + collection bootstrap
-    from qdrant_client import QdrantClient
+    from qdrant_client import AsyncQdrantClient
     from qdrant_client.models import Distance, VectorParams
 
-    qdrant = QdrantClient(
+    qdrant = AsyncQdrantClient(
         url=settings.qdrant_url,
         api_key=settings.qdrant_api_key or None,
     )
-    existing = [c.name for c in qdrant.get_collections().collections]
+    collections_response = await qdrant.get_collections()
+    existing = [c.name for c in collections_response.collections]
     if settings.qdrant_collection not in existing:
-        qdrant.create_collection(
+        await qdrant.create_collection(
             collection_name=settings.qdrant_collection,
             vectors_config=VectorParams(
                 size=settings.embedding_dimensions,
@@ -93,6 +94,7 @@ async def lifespan(app: FastAPI):
         await neo4j.close()
     if redis_client:
         await redis_client.aclose()
+    await qdrant.close()
     await engine.dispose()
     logger.info("lexmind_shutdown")
 

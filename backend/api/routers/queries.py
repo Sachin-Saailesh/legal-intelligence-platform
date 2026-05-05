@@ -3,7 +3,7 @@ import json
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,6 +18,8 @@ logger = get_logger(__name__)
 
 # In-memory queue: session_id -> asyncio.Queue of frames
 _stream_queues: dict[str, asyncio.Queue] = {}
+# Pending orchestrator params: session_id -> params dict
+_pending_sessions: dict[str, dict] = {}
 
 
 class QueryCreate(BaseModel):
@@ -56,18 +58,18 @@ async def _run_orchestrator(
     finally:
         if queue:
             await queue.put(None)  # sentinel: stream done
-        
+
         # Defer cleanup to allow reconnects to drain the queue
         async def _cleanup():
             await asyncio.sleep(60)
             _stream_queues.pop(session_id, None)
+            _pending_sessions.pop(session_id, None)
         asyncio.create_task(_cleanup())
 
 
 @router.post("")
 async def create_query(
     body: QueryCreate,
-    background_tasks: BackgroundTasks,
     current_user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
@@ -83,15 +85,12 @@ async def create_query(
 
     session_id = str(uuid.uuid4())
     _stream_queues[session_id] = asyncio.Queue(maxsize=500)
-
-    background_tasks.add_task(
-        _run_orchestrator,
-        query=body.query,
-        matter_id=body.matter_id,
-        user_id=str(current_user.id),
-        session_id=session_id,
-        metadata=body.metadata,
-    )
+    _pending_sessions[session_id] = {
+        "query": body.query,
+        "matter_id": body.matter_id,
+        "user_id": str(current_user.id),
+        "metadata": body.metadata,
+    }
 
     return {"data": {"session_id": session_id}, "error": None}
 
@@ -148,9 +147,17 @@ async def stream_session(
     queue = _stream_queues.get(session_id)
 
     if not queue:
-        # Session already completed or not found — close silently, no error shown to user
+        # Session not found — already completed or expired
         await websocket.close()
         return
+
+    # Start the orchestrator task here, inside the active WebSocket request.
+    # Cloud Run keeps CPU allocated for the duration of any active HTTP connection
+    # (WebSockets included), so this avoids the CPU-throttling issue that kills
+    # tasks started as FastAPI BackgroundTasks after the POST response is sent.
+    params = _pending_sessions.pop(session_id, None)
+    if params:
+        asyncio.create_task(_run_orchestrator(session_id=session_id, **params))
 
     try:
         while True:
@@ -169,7 +176,7 @@ async def stream_session(
     except WebSocketDisconnect:
         logger.info("ws_client_disconnected", session_id=session_id)
     finally:
-        pass # DO NOT pop the queue here to allow reconnects
+        pass  # DO NOT pop the queue here to allow reconnects
 
 
 @router.get("/{session_id}")

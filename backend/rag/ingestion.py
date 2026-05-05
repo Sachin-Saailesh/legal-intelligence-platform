@@ -285,7 +285,7 @@ class DocumentIngestionPipeline:
                 )
                 for c, emb in zip(all_chunks, embeddings)
             ]
-            self._qdrant.upsert(
+            await self._qdrant.upsert(
                 collection_name=settings.qdrant_collection,
                 points=points,
                 wait=True,

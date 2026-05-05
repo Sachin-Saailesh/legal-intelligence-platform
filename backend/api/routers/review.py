@@ -165,7 +165,7 @@ async def _reingest_correction(session_id: str, corrected_text: str, matter_id: 
                 "is_correction": True,
             },
         )
-        app.state.qdrant_client.upsert(
+        await app.state.qdrant_client.upsert(
             collection_name=settings.qdrant_collection,
             points=[point],
             wait=True,
