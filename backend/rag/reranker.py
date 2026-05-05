@@ -1,3 +1,4 @@
+import threading
 import time
 from dataclasses import dataclass, field
 
@@ -16,11 +17,14 @@ class FlashRankReranker:
     def __init__(self, model_name: str = "ms-marco-MiniLM-L-12-v2") -> None:
         self._model_name = model_name
         self._ranker = None
+        self._lock = threading.Lock()
 
     def _get_ranker(self):
         if self._ranker is None:
-            from flashrank import Ranker
-            self._ranker = Ranker(model_name=self._model_name)
+            with self._lock:
+                if self._ranker is None:
+                    from flashrank import Ranker
+                    self._ranker = Ranker(model_name=self._model_name)
         return self._ranker
 
     def rerank(

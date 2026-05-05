@@ -1,3 +1,4 @@
+import asyncio
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -76,6 +77,12 @@ async def lifespan(app: FastAPI):
     else:
         logger.info("redis_disabled")
     app.state.redis_client = redis_client
+
+    # Pre-warm FlashRank reranker — downloads model once at startup so concurrent
+    # agent calls don't race on the zip extraction into /tmp.
+    from rag.reranker import reranker as _reranker
+    await asyncio.to_thread(_reranker._get_ranker)
+    logger.info("reranker_ready")
 
     # Init orchestrator singletons
     from rag.embeddings import embedding_client, llm_client
