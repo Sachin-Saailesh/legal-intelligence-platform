@@ -170,9 +170,23 @@ async def stream_session(
             )
             session_row = result.scalar_one_or_none()
 
-        if not session_row or session_row.status not in (
-            SessionStatus.pending, SessionStatus.processing
-        ):
+        if not session_row:
+            await websocket.close()
+            return
+
+        # Session already finished on another instance — send a synthetic
+        # complete frame so the frontend stops reconnecting and renders the result.
+        if session_row.status in (SessionStatus.complete, SessionStatus.pending_review):
+            await websocket.send_text(json.dumps({
+                "type": "complete",
+                "confidence": session_row.confidence_score,
+                "requires_review": session_row.status == SessionStatus.pending_review,
+                "review_reason": session_row.review_reason,
+            }))
+            await websocket.close()
+            return
+
+        if session_row.status not in (SessionStatus.pending, SessionStatus.processing):
             await websocket.close()
             return
 

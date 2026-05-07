@@ -270,9 +270,13 @@ function LiveAgentStreamPanel({
   const [error, setError] = useState<string | null>(null);
   const [agentRoute, setAgentRoute] = useState<string | undefined>();
 
-  // Refs to accumulate data for the onComplete callback without stale closure issues
+  // Refs so handleFrame never needs to be recreated — avoids tearing down the
+  // WebSocket connection whenever agentRoute state or onComplete prop changes.
   const chunkAccRef = useRef<string[]>([]);
   const citationAccRef = useRef<SourceChunk[]>([]);
+  const agentRouteRef = useRef<string | undefined>();
+  const onCompleteRef = useRef(onComplete);
+  useEffect(() => { onCompleteRef.current = onComplete; }, [onComplete]);
 
   const handleFrame = useCallback((frame: WsFrame) => {
     switch (frame.type) {
@@ -285,6 +289,7 @@ function LiveAgentStreamPanel({
         const agentId = frame.agent as AgentId;
         setStage("agents_running");
         setActiveAgents((p) => p.includes(agentId) ? p : [...p, agentId]);
+        agentRouteRef.current = frame.agent;
         setAgentRoute(frame.agent);
         break;
       }
@@ -313,13 +318,13 @@ function LiveAgentStreamPanel({
           setDoneAgents((d) => Array.from(new Set([...d, ...prev])));
           return [];
         });
-        onComplete?.({
+        onCompleteRef.current?.({
           output: chunkAccRef.current.join(""),
           citations: citationAccRef.current,
           confidence: frame.confidence,
           requiresReview: frame.requires_review,
           reviewReason: frame.review_reason ?? null,
-          agentRoute,
+          agentRoute: agentRouteRef.current,
           status: frame.requires_review ? "pending_review" : "complete",
         });
         break;
@@ -327,7 +332,7 @@ function LiveAgentStreamPanel({
         setError(frame.message);
         break;
     }
-  }, [onComplete, agentRoute]);
+  }, []);  // stable — all mutable values accessed via refs
 
   const { isDone, close } = useAgentStream(sessionId, { onFrame: handleFrame });
   const fullText = chunks.join("");
