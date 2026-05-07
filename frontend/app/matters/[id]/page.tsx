@@ -420,6 +420,7 @@ export default function MatterDetailPage() {
   const [closingMatter, setClosingMatter] = useState(false);
   const [showCloseConfirm, setShowCloseConfirm] = useState(false);
   const [docs, setDocs] = useState<Document[]>([]);
+  const [failedDocs, setFailedDocs] = useState<{ id: string; filename: string }[]>([]);
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [query, setQuery] = useState(prefill ? decodeURIComponent(prefill) : "");
@@ -476,8 +477,22 @@ export default function MatterDetailPage() {
   }, [conversation.length]);
 
   const loadDocs = () => {
-    api.documents.list(id).then((res) => { if (!res.error) setDocs(res.data); });
+    api.documents.list(id).then((res) => {
+      if (!res.error) {
+        const failed = res.data.filter((d) => d.ingestion_status === "failed");
+        if (failed.length > 0) {
+          setFailedDocs((prev) => {
+            const prevIds = new Set(prev.map((f) => f.id));
+            const next = failed.filter((d) => !prevIds.has(d.id)).map((d) => ({ id: d.id, filename: d.filename }));
+            return next.length > 0 ? [...prev, ...next] : prev;
+          });
+        }
+        setDocs(res.data.filter((d) => d.ingestion_status !== "failed"));
+      }
+    });
   };
+
+  const dismissFailedDoc = (docId: string) => setFailedDocs((prev) => prev.filter((f) => f.id !== docId));
 
   useEffect(() => {
     loadDocs();
@@ -715,6 +730,19 @@ export default function MatterDetailPage() {
               </Tip>
               <input ref={fileRef} type="file" accept=".pdf,.docx,.doc,.txt" className="hidden" onChange={handleFileInput} disabled={uploading} />
             </div>
+
+            {/* Ingestion failure notices */}
+            {failedDocs.map((f) => (
+              <div key={f.id} className="flex items-start gap-3 px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs">
+                <span className="material-symbols-outlined text-[16px] flex-shrink-0 mt-0.5">error</span>
+                <span className="flex-1 leading-relaxed">
+                  <span className="font-semibold">Ingestion failed:</span> {f.filename}. The file may be corrupted or password protected. Try exporting it as a plain PDF and uploading again.
+                </span>
+                <button onClick={() => dismissFailedDoc(f.id)} className="text-red-500/50 hover:text-red-300 transition-colors flex-shrink-0">
+                  <span className="material-symbols-outlined text-[16px]">close</span>
+                </button>
+              </div>
+            ))}
 
             {/* Document list */}
             {docs.length > 0 && (
